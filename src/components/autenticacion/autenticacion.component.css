@@ -1,0 +1,92 @@
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #007bff, #6610f2);
+  font-family: 'Poppins', sans-serif;
+  padding: 2rem 1rem; /* evita que se pegue en pantallas pequeñas */
+}
+
+/* Contenedor principal */
+.auth-card {
+  width: 380px;
+  perspective: 1000px;
+  position: relative;
+}
+
+/* Contenedor interno con efecto flip */
+.auth-inner {
+  width: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.8s ease-in-out;
+  min-height: 480px; /* altura base mínima, pero no fija */
+}
+
+#toggle:checked ~ .auth-inner {
+  transform: rotateY(180deg);
+}
+
+/* Caras del formulario */
+.form-face {
+  position: absolute;
+  width: 100%;
+  backface-visibility: hidden;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  top: 0;
+  left: 0;
+}
+
+.form-face.back {
+  transform: rotateY(180deg);
+}
+
+/* Títulos */
+h4 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+/* Botones y labels */
+button {
+  border-radius: 25px;
+  font-weight: 500;
+}
+
+input.form-control {
+  border-radius: 8px;
+}
+
+.toggle-label {
+  display: block;
+  text-align: center;
+  margin-top: 1rem;
+  color: #0d6efd;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: color 0.3s;
+}
+
+.toggle-label:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* Responsivo */
+@media (max-width: 420px) {
+  .auth-card {
+    width: 90%;
+  }
+
+  .form-face {
+    padding: 1.5rem;
+  }
+}
