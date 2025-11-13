@@ -4,6 +4,7 @@ import { AutenticationService } from './../../services/autenticacion/autenticati
 import { UserLogin, UserLoginRepsonse } from '../../models/User';
 import { CommonModule } from '@angular/common';
 import { NotificacionService } from '../../services/notificacion.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-autenticacion',
@@ -20,7 +21,8 @@ export class AutenticacionComponent implements OnInit {
   constructor(
     private autenticacionService: AutenticationService,
     private formBuilder: FormBuilder,
-    private notyf: NotificacionService
+    private notyf: NotificacionService,
+    private router: Router
 
   ) {}
 
@@ -41,7 +43,7 @@ export class AutenticacionComponent implements OnInit {
   login(): void {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
-      this.notyf.error('Completa los campos correctamente.');
+      this.notyf.warning('Completa los campos correctamente.');
 
       return;
     }
@@ -52,12 +54,13 @@ export class AutenticacionComponent implements OnInit {
       next: (response) => {
         this.notyf.success('Inicio de sesión exitoso');
         this.userLoginResponse = response as UserLoginRepsonse;
-        console.log('✅ Login exitoso:', response);
         sessionStorage.setItem('token', this.userLoginResponse.token);
+        localStorage.setItem('userData', JSON.stringify(this.userLoginResponse.user));
         this.loginForm.reset();
+        this.router.navigate(['/inicio/dashboard']);
       },
       error: (err) => {
-        console.error('❌ Error en login:', err);
+        this.notyf.error('Error en el inicio de sesión. Verifica tus credenciales.');
       },
     });
   }

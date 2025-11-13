@@ -5,12 +5,13 @@
   justify-content: center;
   background: linear-gradient(135deg, #007bff, #6610f2);
   font-family: 'Poppins', sans-serif;
-  padding: 2rem 1rem; /* evita que se pegue en pantallas pequeñas */
+  padding: 2rem 1rem;
+  box-sizing: border-box;
 }
 
-/* Contenedor principal */
+/* Tarjeta principal */
 .auth-card {
-  width: 380px;
+  width: 460px; /* ancho general */
   perspective: 1000px;
   position: relative;
 }
@@ -21,7 +22,7 @@
   position: relative;
   transform-style: preserve-3d;
   transition: transform 0.8s ease-in-out;
-  min-height: 480px; /* altura base mínima, pero no fija */
+  height: 650px; /* altura máxima (registro) */
 }
 
 #toggle:checked ~ .auth-inner {
@@ -36,35 +37,70 @@
   background: #fff;
   border-radius: 1rem;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
-  padding: 2rem;
   display: flex;
-  flex-direction: column;
   justify-content: center;
-  top: 0;
-  left: 0;
+  box-sizing: border-box;
+  padding: 2rem;
+}
+
+/* Scroll interno para contenido largo (registro) */
+.form-content {
+  width: 100%;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+/* Login más corto */
+.form-face.front .form-content {
+  height: 350px; /* suficiente para 2 inputs */
+}
+
+/* Registro completo */
+.form-face.back .form-content {
+  height: 600px; /* suficiente para todos los inputs con scroll */
 }
 
 .form-face.back {
   transform: rotateY(180deg);
 }
 
-/* Títulos */
-h4 {
-  text-align: center;
+/* Encabezado con logo y título */
+.form-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
   margin-bottom: 1.5rem;
-  font-weight: 600;
 }
 
-/* Botones y labels */
+.form-header h4 {
+  margin: 0;
+  font-weight: 600;
+  color: #333;
+}
+
+.logo {
+  width: 75px;
+  height: 75px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.1);
+}
+
+/* Inputs y botones */
+input.form-control {
+  border-radius: 8px;
+}
+
 button {
   border-radius: 25px;
   font-weight: 500;
 }
 
-input.form-control {
-  border-radius: 8px;
-}
-
+/* Etiqueta para alternar */
 .toggle-label {
   display: block;
   text-align: center;
@@ -81,12 +117,17 @@ input.form-control {
 }
 
 /* Responsivo */
-@media (max-width: 420px) {
+@media (max-width: 480px) {
   .auth-card {
-    width: 90%;
+    width: 95%;
   }
 
   .form-face {
-    padding: 1.5rem;
+    padding: 2rem 1.5rem;
+  }
+
+  .logo {
+    width: 65px;
+    height: 65px;
   }
 }

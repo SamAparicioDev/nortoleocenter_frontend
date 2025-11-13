@@ -1,0 +1,90 @@
+/* menu-vertical.component.css */
+
+#aside-class{
+  background-color: #001affe1 !important;
+}
+.end {
+  padding-bottom:20px;
+}
+
+.d-flex .logo{
+  padding-top: 20px;
+}
+hr {
+  margin: 1rem 0;
+  color: #73277B;
+  border: 1px solid;
+  border-top: var(--bs-border-width) solid;
+  opacity: .25;
+}
+a {
+  text-decoration: none;
+
+}
+
+
+.fa-solid,.fa-bars {
+  margin-top: 10px;
+  color: white !important;
+}
+
+#profile {
+  font-size: 10px;
+  display: block;      /* para que el span se comporte como bloque y quede debajo */
+  margin-top: 2px;     /* margen pequeño arriba para separar un poco */
+  margin-bottom: 0;
+}
+.header {
+  margin-left: 11px;
+
+}
+i {
+  margin-right: 20px;
+  padding-right: 30px;
+}
+
+li{
+  padding-bottom: 10px;
+  padding-top: 20px;
+}
+
+ul.nav li:hover {
+  background-color: #73277B;
+  border-radius: 10px;
+}
+
+
+ul.nav li {
+  padding: 12px 7px;
+  cursor: pointer;
+}
+
+
+
+img.rounded-circle {
+  border: 3px solid #73277B !important;
+
+}
+
+aside {
+  width: 240px;
+  transition: width 0.3s ease;
+}
+
+aside.collapsed {
+  width: 70px !important;
+}
+
+/* Ancho normal del sidebar */
+.offset-2 {
+  margin-left: 240px;
+  transition: margin-left 0.3s ease;
+}
+
+/* Ancho colapsado del sidebar */
+.offset-custom {
+  margin-left: 70px;
+  transition: margin-left 0.3s ease;
+}
+
+

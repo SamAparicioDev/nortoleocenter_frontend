@@ -1,0 +1,33 @@
+/* Logo */
+.logo-sena {
+  width: 70px;      /* más grande */
+  height: 70px;
+  border-radius: 10px;
+  object-fit: contain;
+}
+
+/* Título */
+h3 {
+  font-size: 22px;
+  color: #ebebeb;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Fecha */
+p {
+  color: #ffffff;      /* gris más oscuro */
+  font-size: 14px;
+  margin: 2px 0 0 0;
+}
+
+
+/* Navbar */
+nav.navbar {
+  background: linear-gradient(90deg, #0077f7ea, #b2deff); /* degradado moderno */
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}

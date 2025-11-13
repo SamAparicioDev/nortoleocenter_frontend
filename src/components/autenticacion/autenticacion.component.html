@@ -5,78 +5,81 @@
     <div class="auth-inner">
       <!-- LOGIN -->
       <div class="form-face front">
-        <h4>Iniciar sesión</h4>
-        <form [formGroup]="loginForm" (ngSubmit)="login()">
-          <div class="mb-3">
-            <label class="form-label">Correo electrónico</label>
-            <input type="email"
-                   class="form-control"
-                   formControlName="email"
-                   placeholder="ejemplo@mail.com">
+        <div class="form-content">
+          <div class="form-header">
+            <img src="logo-nortoleocenter.png" alt="Logo" class="logo">
+            <h4>Iniciar sesión</h4>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label">Contraseña</label>
-            <input type="password"
-                   class="form-control"
-                   formControlName="password"
-                   placeholder="********">
-          </div>
+          <form [formGroup]="loginForm" (ngSubmit)="login()">
+            <div class="mb-3">
+              <label class="form-label">Correo electrónico</label>
+              <input type="email" class="form-control" formControlName="email" placeholder="ejemplo@mail.com">
+              <small *ngIf="loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched" class="text-danger d-block mt-1">
+                Debe llenar correctamente el campo de correo electrónico.
+              </small>
+            </div>
 
-          <button class="btn btn-primary w-100" type="submit">
-            Entrar
-          </button>
-        </form>
+            <div class="mb-3">
+              <label class="form-label">Contraseña</label>
+              <input type="password" class="form-control" formControlName="password" placeholder="********">
+              <small *ngIf="loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched" class="text-danger d-block mt-1">
+                Debe llenar correctamente el campo de contraseña.
+              </small>
+            </div>
 
-        <label for="toggle" class="toggle-label mt-3">
-          ¿No tienes cuenta? Regístrate
-        </label>
+            <button class="btn btn-primary w-100" [disabled]="loginForm.invalid" type="submit">Entrar</button>
+          </form>
+
+          <label for="toggle" class="toggle-label mt-3">¿No tienes cuenta? Regístrate</label>
+        </div>
       </div>
 
-      <!-- REGISTRO -->
       <div class="form-face back">
-        <h4>Crear cuenta</h4>
-        <form [formGroup]="registerForm" (ngSubmit)="register()">
-          <div class="mb-3">
-            <label class="form-label">Nombre completo</label>
-            <input type="text"
-                   class="form-control"
-                   formControlName="name"
-                   placeholder="Tu nombre">
+        <div class="form-content">
+          <div class="form-header">
+            <img src="logo-nortoleocenter.png" alt="Logo" class="logo">
+            <h4>Crear cuenta</h4>
           </div>
 
-          <div class="mb-3">
-            <label class="form-label">Correo electrónico</label>
-            <input type="email"
-                   class="form-control"
-                   formControlName="email"
-                   placeholder="ejemplo@mail.com">
-          </div>
+          <form [formGroup]="registerForm" (ngSubmit)="register()">
+            <div class="mb-3">
+              <label class="form-label">Nombre completo</label>
+              <input type="text" class="form-control" formControlName="name" placeholder="Tu nombre">
+              <small *ngIf="registerForm.get('name')?.hasError('required') && registerForm.get('name')?.touched" class="text-danger d-block mt-1">
+                Debe llenar correctamente el campo de nombre.
+              </small>
+            </div>
 
-          <div class="mb-3">
-            <label class="form-label">Contraseña</label>
-            <input type="password"
-                   class="form-control"
-                   formControlName="password"
-                   placeholder="********">
-          </div>
+            <div class="mb-3">
+              <label class="form-label">Correo electrónico</label>
+              <input type="email" class="form-control" formControlName="email" placeholder="ejemplo@mail.com">
+              <small *ngIf="registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched" class="text-danger d-block mt-1">
+                Debe llenar correctamente el campo de correo electrónico.
+              </small>
+            </div>
 
-          <div class="mb-3">
-            <label class="form-label">Repetir contraseña</label>
-            <input type="password"
-                   class="form-control"
-                   formControlName="password_confirmation"
-                   placeholder="********">
-          </div>
+            <div class="mb-3">
+              <label class="form-label">Contraseña</label>
+              <input type="password" class="form-control" formControlName="password" placeholder="********">
+              <small *ngIf="registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched" class="text-danger d-block mt-1">
+                Debe llenar correctamente el campo de contraseña.
+              </small>
+            </div>
 
-          <button class="btn btn-success w-100" type="submit">
-            Registrarse
-          </button>
-        </form>
+            <div class="mb-3">
+              <label class="form-label">Repetir contraseña</label>
+              <input type="password" class="form-control" formControlName="password_confirmation" placeholder="********">
+              <small *ngIf="registerForm.get('password_confirmation')?.hasError('required') && registerForm.get('password_confirmation')?.touched" class="text-danger d-block mt-1">
+                Debe llenar correctamente el campo de repetir contraseña.
+              </small>
+            </div>
 
-        <label for="toggle" class="toggle-label mt-3">
-          ¿Ya tienes cuenta? Inicia sesión
-        </label>
+            <button class="btn btn-success w-100" [disabled]="registerForm.invalid" type="submit">Registrarse</button>
+          </form>
+
+          <label for="toggle" class="toggle-label mt-3">¿Ya tienes cuenta? Inicia sesión</label>
+        </div>
       </div>
     </div>
   </div>

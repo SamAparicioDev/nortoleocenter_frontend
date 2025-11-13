@@ -26,6 +26,14 @@ export class NotificacionService {
           text: 'error',
         },
       },
+      {
+        type: 'warning',
+        background: '#FF9800',
+        icon: {
+          className: 'material-icons',
+          text: 'warning',
+        },
+      }
     ],
   });
 
@@ -35,5 +43,11 @@ export class NotificacionService {
 
   error(message: string) {
     this.notyf.error(message);
+  }
+  warning(message: string) {
+    this.notyf.open({
+      type: 'warning',
+      message: message,
+    });
   }
 }

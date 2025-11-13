@@ -1,0 +1,9 @@
+<app-menu-vertical></app-menu-vertical>
+
+<main
+  [ngClass]="{ 'offset-2': !isCollapsed, 'offset-custom': isCollapsed }"
+  class="contenido-principal"
+>
+  <app-header></app-header>
+  <router-outlet></router-outlet>
+</main>

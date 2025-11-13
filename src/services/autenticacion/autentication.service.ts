@@ -24,10 +24,6 @@ export class AutenticationService {
   }
 
   logout(){
-    return this.http.post(`${environment.apiUrl}/logout`, {
-      Headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`
-      }
-    });
+    return this.http.post(`${environment.apiUrl}/logout`,{});
   }
 }
