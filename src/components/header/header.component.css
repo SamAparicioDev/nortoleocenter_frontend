@@ -1,12 +1,33 @@
-/* Logo */
-.logo-sena {
-  width: 70px;      /* más grande */
-  height: 70px;
-  border-radius: 10px;
-  object-fit: contain;
+/* =======================
+   NAVBAR / HEADER
+   ======================= */
+nav.navbar {
+  background: linear-gradient(90deg, #1E1E26, #3C1E4F) !important; /* degradado moderno */
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* Título */
+/* =======================
+   LOGO (ligeramente más ancho)
+   ======================= */
+.logo-sena {
+  display: inline-block;
+  width: 90px;                   /* antes 70px → más ancho */
+  height: 70px;                  /* mantiene la altura */
+  background-color: #ffffff;     /* fondo blanco */
+  border-radius: 10px;           /* esquinas suaves */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  object-fit: contain;           /* mantiene proporciones del logo */
+  border: none;
+  vertical-align: middle;
+}
+
+/* =======================
+   TEXTO
+   ======================= */
 h3 {
   font-size: 22px;
   color: #ebebeb;
@@ -14,20 +35,32 @@ h3 {
   font-weight: 600;
 }
 
-/* Fecha */
-p {
-  color: #ffffff;      /* gris más oscuro */
+nav.navbar p {
+  color: #ffffff;
   font-size: 14px;
   margin: 2px 0 0 0;
 }
 
+/* =======================
+   RESPONSIVE
+   ======================= */
+@media (max-width: 768px) {
+  nav.navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
+  }
 
-/* Navbar */
-nav.navbar {
-  background: linear-gradient(90deg, #0077f7ea, #b2deff); /* degradado moderno */
-  padding: 10px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  .logo-sena {
+    width: 80px;  /* mantiene proporción más ancha también en móvil */
+    height: 60px;
+  }
+
+  h3 {
+    font-size: 18px;
+  }
+
+  nav.navbar p {
+    font-size: 12px;
+  }
 }

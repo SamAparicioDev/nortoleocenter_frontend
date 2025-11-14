@@ -1,4 +1,4 @@
-import { UserLogin, UserRegister } from './../../models/User';
+import { UserLogin, UserDTO } from './../../models/User';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/dev';
@@ -19,7 +19,7 @@ export class AutenticationService {
     return this.http.post(`${environment.apiUrl}/login`, userLogin);
   }
 
-  register(user: UserRegister){
+  register(user: UserDTO){
     return this.http.post(`${environment.apiUrl}/register`, user);
   }
 

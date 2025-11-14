@@ -1,29 +1,20 @@
 <div class="container-fluid">
   <div class="row">
-    <aside id="aside-class" class="text-white"
-      [class.collapsed]="isCollapsed"
-      [class.fullscreen]="isMobileMenuOpen"
-      style="position: fixed; top: 0; left: 0; height: 100vh; transition: width 0.3s ease; overflow-x: hidden;"
-    >
+    <aside id="aside-class" class="text-white" [class.collapsed]="isCollapsed" [class.fullscreen]="isMobileMenuOpen"
+      style="position: fixed; top: 0; left: 0; height: 100vh; transition: width 0.3s ease; overflow-x: hidden;">
       <div class="d-flex flex-column h-100">
-          <i class="fa-solid fa-bars me-2"></i>
-          <h5 class="mb-0 text-center" *ngIf="!isCollapsed" >NORTOLEOCENTER</h5>
+        <i class="fa-solid fa-bars me-2"></i>
+        <h5 class="mb-0 text-center" *ngIf="!isCollapsed">NORTOLEOCENTER</h5>
 
         <hr *ngIf="!isCollapsed">
 
         <!-- Usuario -->
         <div class="d-flex align-items-center px-1 mb-2">
-          <a routerLink="perfil" routerLinkActive="active">
-            <img
-              src="/aceite-palma.jpg"
-              alt=""
-              width="45"
-              height="45"
-              class="rounded-circle me-2"
-            />
+          <a routerLink="perfil" routerLinkActive="active" class="avatar-wrapper">
+            <img src="/aceite-palma.jpg" alt="" width="45" height="45" class="rounded-circle me-2" />
           </a>
           <div class="header" *ngIf="!isCollapsed">
-            <h6 class="mb-0">Gestion palma de aciete</h6>
+            <h6 class="mb-0">Gestión palma de aceite</h6>
             <span id="profile">Norte de Santander</span>
           </div>
         </div>
@@ -31,25 +22,31 @@
         <!-- Menú -->
         <ul class="nav flex-column mb-auto px-2">
           <li class="nav-item">
-            <a class="nav text-white" routerLink="dashboard" (click)="cerrarMenu()" routerLinkActive="active">
+            <a class="nav text-white" routerLink="inicio" (click)="cerrarMenu()" routerLinkActive="active">
               <i class="fas fa-home me-2"></i>
               <span *ngIf="!isCollapsed">Inicio</span>
             </a>
           </li>
+           <li class="nav-item">
+            <a class="nav text-white" routerLink="finca" (click)="cerrarMenu()" routerLinkActive="active">
+              <i class="fas fa-headphones me-2"></i>
+              <span *ngIf="!isCollapsed">Fincas</span>
+            </a>
+          </li>
           <li class="nav-item">
-            <a class="nav text-white" routerLink="/inicio/experiencia" (click)="cerrarMenu()" routerLinkActive="active">
+            <a class="nav text-white" routerLink="envio" (click)="cerrarMenu()" routerLinkActive="active">
               <i class="fas fa-headphones me-2"></i>
               <span *ngIf="!isCollapsed">Envios</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav text-white" routerLink="usuarios" (click)="cerrarMenu()" routerLinkActive="active">
+            <a class="nav text-white" routerLink="recepcion" (click)="cerrarMenu()" routerLinkActive="active">
               <i class="fas fa-users me-2"></i>
               <span *ngIf="!isCollapsed">Recepciones</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav text-white" routerLink="productores" routerLinkActive="active">
+            <a class="nav text-white" routerLink="configuracion" routerLinkActive="active">
               <i class="fas fa-users me-2"></i>
               <span *ngIf="!isCollapsed">Configuracion</span>
             </a>

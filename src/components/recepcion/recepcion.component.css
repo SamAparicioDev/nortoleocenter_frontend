@@ -1,0 +1,105 @@
+/* ---- TITULOS ---- */
+h2 {
+  color: #3C1E4F;          /* Morado oscuro */
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* ---- CARD / CONTENEDOR ---- */
+.card {
+  border-radius: 14px;
+  padding: 20px;
+  background: #ffffff;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  border: none;
+}
+
+/* ---- TABLA ---- */
+.table {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid #e5e5e5;
+}
+
+.table th {
+  text-align: center;
+  background-color: #F3E8F7; /* Morado claro suave */
+  color: #3C1E4F;
+  font-weight: bold;
+  padding: 12px;
+}
+
+.table td {
+  vertical-align: middle;
+  text-align: center;
+  padding: 12px;
+}
+
+/* Hover en filas */
+.table tbody tr:hover {
+  background-color: #faf6fc;
+}
+
+/* ---- BOTONES ---- */
+.btn-success {
+  background-color: #73277B; /* Morado principal */
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  transition: 0.2s ease-in-out;
+}
+
+.btn-success:hover {
+  background-color: #5a1f60; /* Más oscuro */
+}
+
+/* Botón eliminar coherente con el estilo */
+.btn-danger {
+  background-color: #C62828;
+  border: none;
+  border-radius: 8px;
+}
+
+.btn-danger:hover {
+  background-color: #9f1f1f;
+}
+
+/* ---- FORMULARIOS ---- */
+
+/* Labels */
+form label {
+  font-weight: bold;
+  color: #3C1E4F;
+}
+
+/* Inputs y selects */
+form input,
+form select,
+form textarea {
+  border: 1.5px solid #d5c3da;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #f9f5fb;
+  transition: all 0.25s ease;
+}
+
+/* Focus suave */
+form input:focus,
+form select:focus,
+form textarea:focus {
+  border-color: #73277B;
+  background: #ffffff;
+  box-shadow: 0 0 6px rgba(115, 39, 123, 0.35);
+  outline: none;
+}
+
+/* Textarea estilizada */
+textarea {
+  resize: vertical;
+}
+
+/* Espaciado más elegante entre elementos */
+form .form-group,
+form div {
+  margin-bottom: 14px;
+}

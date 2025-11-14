@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { AutenticationService } from './../../services/autenticacion/autentication.service';
 import { UserLogin, UserLoginRepsonse } from '../../models/User';
 import { CommonModule } from '@angular/common';
-import { NotificacionService } from '../../services/notificacion.service';
+import { NotificacionService } from '../../services/notificacion/notificacion.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -57,7 +57,7 @@ export class AutenticacionComponent implements OnInit {
         sessionStorage.setItem('token', this.userLoginResponse.token);
         localStorage.setItem('userData', JSON.stringify(this.userLoginResponse.user));
         this.loginForm.reset();
-        this.router.navigate(['/inicio/dashboard']);
+        this.router.navigate(['/inicio']);
       },
       error: (err) => {
         this.notyf.error('Error en el inicio de sesión. Verifica tus credenciales.');

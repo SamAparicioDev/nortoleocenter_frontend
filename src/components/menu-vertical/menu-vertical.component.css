@@ -1,7 +1,7 @@
 /* menu-vertical.component.css */
 
 #aside-class{
-  background-color: #001affe1 !important;
+  background: linear-gradient(180deg, #2B2B38, #3C1E4F) !important;
 }
 .end {
   padding-bottom:20px;
@@ -49,9 +49,10 @@ li{
 }
 
 ul.nav li:hover {
-  background-color: #73277B;
+  background-color: #C086F2;
   border-radius: 10px;
 }
+
 
 
 ul.nav li {
@@ -62,7 +63,7 @@ ul.nav li {
 
 
 img.rounded-circle {
-  border: 3px solid #73277B !important;
+  border: 3px solid #C086F2 !important;
 
 }
 

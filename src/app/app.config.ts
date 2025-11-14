@@ -4,16 +4,24 @@ import {
   provideZoneChangeDetection,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import {
+  provideHttpClient,
+  withInterceptors
+} from '@angular/common/http';
 import { routes } from './app.routes';
-import { provideHttpClient } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
-
+import { interceptorsInterceptor } from '../interceptors/interceptors.interceptor';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(),
+
+    // 🟢 AQUI SE AGREGA CORRECTAMENTE EL INTERCEPTOR
+    provideHttpClient(
+      withInterceptors([interceptorsInterceptor])
+    ),
+
     provideAnimations(),
     importProvidersFrom(
       ToastrModule.forRoot({
