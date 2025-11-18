@@ -12,6 +12,22 @@ export interface UserLoginRepsonse{
 
 }
 
+export interface UserById {
+    id: number;
+    name: string;
+    email: string;
+
+    // email_verified_at can be a datetime string or null
+    email_verified_at: string | null;
+
+    // The role must be one of the defined values
+    rol: 'admin' | 'empleado' | 'productor';
+
+    // Timestamps are typically ISO 8601 strings from Laravel/API
+    created_at: string;
+    updated_at: string;
+}
+
 export interface UserLogin {
   email: string;
   password: string;

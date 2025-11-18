@@ -23,6 +23,10 @@ export class FincaService {
     return this.httpClient.get<FincaResponse[]>(`${environment.apiUrl}/mis-fincas`);
   }
 
+  crearFinca(fincaDTO : FincaDTO) : Observable<FincaResponse>{
+    return this.httpClient.post<FincaResponse>(`${environment.apiUrl}/fincas`, fincaDTO)
+  }
+
   actualizarFincaPorId(id: number, fincaDTO: FincaDTO): Observable<FincaResponse> {
     return this.httpClient.put<FincaResponse>(`${environment.apiUrl}/fincas/${id}`, fincaDTO);
   }

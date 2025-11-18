@@ -1,21 +1,28 @@
 import { Component, OnInit } from '@angular/core';
 import { RecepcionData, RecepcionDTO } from '../../models/Recepcion';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RecepcionService } from '../../services/recepcion/recepcion.service';
+import { EnvioService } from '../../services/envio/envio.service';
+import { EnvioData } from '../../models/Envio';
 
 @Component({
   selector: 'app-recepcion',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './recepcion.component.html',
-  styleUrls: ['./recepcion.component.css']
+  styleUrls: ['./recepcion.component.css'],
 })
 export class RecepcionComponent implements OnInit {
-
   recepciones: RecepcionData[] = [];
   recepcionesPaginadas: RecepcionData[] = [];
   cargando: boolean = false;
+  envios: EnvioData[] = [];
 
   paginaActual = 1;
   itemsPorPagina = 10;
@@ -27,12 +34,21 @@ export class RecepcionComponent implements OnInit {
 
   constructor(
     private recepcionService: RecepcionService,
+    private envioService: EnvioService,
     private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
     this.crearFormulario();
     this.obtenerRecepciones();
+    this.obtenerEnvios();
+  }
+
+  obtenerEnvios() {
+    this.envioService.obtenerMisEnvios().subscribe((response) => {
+        this.envios = response;
+        this.envios = this.envios.filter((e) => e.estado === "pendiente");
+    });
   }
 
   crearFormulario() {
@@ -61,14 +77,16 @@ export class RecepcionComponent implements OnInit {
     this.recepcionService.obtenerRecepciones().subscribe({
       next: (resp: RecepcionData[]) => {
         this.recepciones = resp;
-        this.totalPaginas = Math.ceil(this.recepciones.length / this.itemsPorPagina);
+        this.totalPaginas = Math.ceil(
+          this.recepciones.length / this.itemsPorPagina
+        );
         this.actualizarPaginacion();
         this.cargando = false;
       },
       error: (err) => {
-        console.error("Error cargando recepciones:", err);
+        console.error('Error cargando recepciones:', err);
         this.cargando = false;
-      }
+      },
     });
   }
 
@@ -78,18 +96,32 @@ export class RecepcionComponent implements OnInit {
     const dto: RecepcionDTO = this.formRecepcion.value;
 
     if (this.editando && this.idEditando !== null) {
-      this.recepcionService.actualizarRecepcion(this.idEditando, dto).subscribe({
-        next: () => {
-          this.obtenerRecepciones();
-          this.cancelarEdicion();
-        }
-      });
+      // Actualización normal
+      this.recepcionService
+        .actualizarRecepcion(this.idEditando, dto)
+        .subscribe({
+          next: () => {
+            this.obtenerRecepciones();
+            this.cancelarEdicion();
+          },
+        });
     } else {
+      // CREACIÓN: cambiamos el estado del envío a "recibido"
       this.recepcionService.crearRecepcion(dto).subscribe({
         next: () => {
-          this.obtenerRecepciones();
-          this.formRecepcion.reset();
-        }
+          this.envioService
+            .cambiarEstadoEnvio(dto.envio_id, 'recibido')
+            .subscribe({
+              next: () => {
+                console.log('Estado del envío actualizado a recibido');
+                this.obtenerRecepciones(); // Solo aquí refrescamos la lista
+                this.formRecepcion.reset();
+              },
+              error: (err) =>
+                console.error('Error actualizando estado del envío', err),
+            });
+        },
+        error: (err) => console.error('Error creando la recepción', err),
       });
     }
   }
@@ -101,7 +133,7 @@ export class RecepcionComponent implements OnInit {
     this.formRecepcion.setValue({
       envio_id: recepcion.envio_id,
       precio_kg: recepcion.precio_kg,
-      peso_recibido_kg: recepcion.peso_recibido_kg
+      peso_recibido_kg: recepcion.peso_recibido_kg,
     });
   }
 
@@ -112,12 +144,13 @@ export class RecepcionComponent implements OnInit {
   }
 
   eliminar(id: number) {
-    if (!confirm("¿Seguro que deseas eliminar esta recepción?")) return;
+    if (!confirm('¿Seguro que deseas eliminar esta recepción?')) return;
 
     this.recepcionService.eliminarRecepcion(id).subscribe({
       next: () => {
         this.obtenerRecepciones();
-      }
+      },
+      error: (err) => console.error('Error eliminando la recepción', err),
     });
   }
 }

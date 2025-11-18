@@ -21,6 +21,17 @@ h2 {
   border: 1px solid #e5e5e5;
 }
 
+.btn-morado {
+  background-color: #6f42c1; /* morado Bootstrap similar */
+  color: white;
+  border: none;
+}
+
+.btn-morado:hover {
+  background-color: #5936a2; /* morado más oscuro al hover */
+}
+
+
 .table th {
   text-align: center;
   background-color: #F3E8F7;

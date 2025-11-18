@@ -10,7 +10,7 @@
 
         <!-- Usuario -->
         <div class="d-flex align-items-center px-1 mb-2">
-          <a routerLink="perfil" routerLinkActive="active" class="avatar-wrapper">
+          <a routerLink="usuario" routerLinkActive="active" class="avatar-wrapper">
             <img src="/aceite-palma.jpg" alt="" width="45" height="45" class="rounded-circle me-2" />
           </a>
           <div class="header" *ngIf="!isCollapsed">
@@ -21,36 +21,46 @@
 
         <!-- Menú -->
         <ul class="nav flex-column mb-auto px-2">
-          <li class="nav-item">
-            <a class="nav text-white" routerLink="inicio" (click)="cerrarMenu()" routerLinkActive="active">
-              <i class="fas fa-home me-2"></i>
-              <span *ngIf="!isCollapsed">Inicio</span>
-            </a>
-          </li>
+          @if (isProductor() || isAdmin()) {
            <li class="nav-item">
             <a class="nav text-white" routerLink="finca" (click)="cerrarMenu()" routerLinkActive="active">
               <i class="fas fa-headphones me-2"></i>
               <span *ngIf="!isCollapsed">Fincas</span>
             </a>
           </li>
+        }
+         @if (isProductor() || isAdmin()) {
+          <li class="nav-item">
+            <a class="nav text-white" routerLink="lote" (click)="cerrarMenu()" routerLinkActive="active">
+              <i class="fas fa-users me-2"></i>
+              <span *ngIf="!isCollapsed">Lotes</span>
+            </a>
+          </li>
+        }
+        @if (isProductor() || isAdmin()){
           <li class="nav-item">
             <a class="nav text-white" routerLink="envio" (click)="cerrarMenu()" routerLinkActive="active">
               <i class="fas fa-headphones me-2"></i>
               <span *ngIf="!isCollapsed">Envios</span>
             </a>
           </li>
+        }
+        @if (isEmpleado() || isAdmin()) {
           <li class="nav-item">
             <a class="nav text-white" routerLink="recepcion" (click)="cerrarMenu()" routerLinkActive="active">
               <i class="fas fa-users me-2"></i>
               <span *ngIf="!isCollapsed">Recepciones</span>
             </a>
           </li>
+        }
+        @if(isAdmin()){
           <li class="nav-item">
             <a class="nav text-white" routerLink="configuracion" routerLinkActive="active">
               <i class="fas fa-users me-2"></i>
               <span *ngIf="!isCollapsed">Configuracion</span>
             </a>
           </li>
+        }
         </ul>
 
         <hr *ngIf="!isCollapsed">

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AutenticationService } from './../../services/autenticacion/autentication.service';
-import { UserLogin, UserLoginRepsonse } from '../../models/User';
+import { UserById, UserLogin, UserLoginRepsonse } from '../../models/User';
 import { CommonModule } from '@angular/common';
 import { NotificacionService } from '../../services/notificacion/notificacion.service';
 import { Router } from '@angular/router';
@@ -55,6 +55,7 @@ export class AutenticacionComponent implements OnInit {
         this.notyf.success('Inicio de sesión exitoso');
         this.userLoginResponse = response as UserLoginRepsonse;
         sessionStorage.setItem('token', this.userLoginResponse.token);
+        localStorage.setItem('token', this.userLoginResponse.token);
         localStorage.setItem('userData', JSON.stringify(this.userLoginResponse.user));
         this.loginForm.reset();
         this.router.navigate(['/inicio']);

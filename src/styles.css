@@ -101,6 +101,10 @@ textarea {
   resize: vertical;
 }
 
+.card-header{
+  background-color: #3C1E4F;
+}
+
 form .form-group,
 form div {
   margin-bottom: 14px;

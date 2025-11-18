@@ -1,7 +1,8 @@
-import { Component, inject, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AutenticationService } from '../../services/autenticacion/autentication.service';
+import { UserById } from '../../models/User';
 
 @Component({
   selector: 'app-menu-vertical',
@@ -11,14 +12,32 @@ import { AutenticationService } from '../../services/autenticacion/autentication
   styleUrls: ['./menu-vertical.component.css']
 })
 export class MenuVerticalComponent implements OnInit {
+
   isCollapsed = false;
   isMobileMenuOpen = false;
+
+  // Para almacenar el usuario logueado
+  userDataUser!: UserById | null;
 
   constructor(private autenticacionService: AutenticationService) {}
 
   ngOnInit() {
+    this.loadUser();
     this.checkScreenSize();
   }
+
+  /** Cargar el usuario del localStorage */
+  loadUser() {
+    const stored = localStorage.getItem('userData');
+
+    if (stored) {
+      this.userDataUser = JSON.parse(stored) as UserById;
+    } else {
+      this.userDataUser = null;
+      console.warn('No se encontró userData en localStorage');
+    }
+  }
+
   @HostListener('window:resize')
   onResize() {
     this.checkScreenSize();
@@ -50,9 +69,24 @@ export class MenuVerticalComponent implements OnInit {
     }
   }
 
+  /** Comprobaciones de roles */
+  isAdmin(): boolean {
+    return this.userDataUser?.rol === 'admin';
+  }
+
+  isProductor(): boolean {
+    return this.userDataUser?.rol === 'productor';
+  }
+
+  isEmpleado(): boolean {
+    return this.userDataUser?.rol === 'empleado';
+  }
+
+  /** Cerrar sesión */
   cerrarSesion() {
     this.autenticacionService.logout();
     sessionStorage.removeItem('token');
     localStorage.removeItem('userData');
+    localStorage.removeItem('token');
   }
 }

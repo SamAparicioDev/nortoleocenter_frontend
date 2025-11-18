@@ -1,3 +1,4 @@
+import { CiudadResponse } from './Ciudad';
 export interface FincaDTO {
   nombre: string;
   ciudad_id: number;
@@ -13,4 +14,5 @@ export interface FincaResponse {
   productor_id: number;
   nombre: string;
   direccion: string;
+  ciudad: CiudadResponse;
 }

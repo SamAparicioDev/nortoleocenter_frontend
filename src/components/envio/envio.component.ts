@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgIf } from '@angular/common';
 import { EnvioService } from '../../services/envio/envio.service';
 import { EnvioDTO, EnvioData } from '../../models/Envio';
 import { FincaService } from '../../services/finca/finca.service';
@@ -11,7 +11,7 @@ import { LoteResponse } from '../../models/Lote';
 @Component({
   selector: 'app-envio',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgIf],
   templateUrl: './envio.component.html',
   styleUrls: ['./envio.component.css'],
 })
@@ -28,7 +28,6 @@ export class EnvioComponent implements OnInit {
   editando = false;
   idEditando: number | null = null;
 
-  // 🔥 Listas para select
   fincas: FincaResponse[] = [];
   lotes: LoteResponse[] = [];
 
@@ -48,20 +47,18 @@ export class EnvioComponent implements OnInit {
   crearFormulario() {
     this.formEnvio = this.fb.group({
       finca_id: ['', Validators.required],
-      lote_id: ['', Validators.required],
+      lote_id: [''],
       peso_kg: ['', Validators.required],
       observaciones: ['', [Validators.required, Validators.maxLength(255)]],
     });
 
-    // 🔥 Cuando cambia la finca, actualizamos lotes
     this.formEnvio.get('finca_id')?.valueChanges.subscribe((fincaId) => {
       if (fincaId) this.obtenerLotesPorFinca(fincaId);
       else this.lotes = [];
-      this.formEnvio.patchValue({ lote_id: '' }); // limpia lote
+      this.formEnvio.patchValue({ lote_id: '' });
     });
   }
 
-  // 🔥 Obtener mis fincas
   obtenerMisFincas() {
     this.fincaService.obtenerMisFincas().subscribe({
       next: (resp) => (this.fincas = resp),
@@ -69,7 +66,6 @@ export class EnvioComponent implements OnInit {
     });
   }
 
-  // 🔥 Obtener lotes de la finca seleccionada
   obtenerLotesPorFinca(fincaId: number) {
     this.loteService.obtenerLotesPorFincaId(fincaId).subscribe({
       next: (resp) => (this.lotes = resp),
@@ -113,13 +109,16 @@ export class EnvioComponent implements OnInit {
           this.obtenerEnvios();
           this.cancelarEdicion();
         },
+        error: (err) => console.error('Error al actualizar:', err),
       });
     } else {
       this.envioService.guardarEnvio(dto).subscribe({
         next: () => {
           this.obtenerEnvios();
           this.formEnvio.reset();
+          this.lotes = [];
         },
+        error: (err) => console.error('Error al guardar:', err),
       });
     }
   }
@@ -148,6 +147,15 @@ export class EnvioComponent implements OnInit {
 
     this.envioService.eliminarEnvioPorId(id).subscribe({
       next: () => this.obtenerEnvios(),
+    });
+  }
+
+  marcarComoEnviado(envioId: number) {
+    if (!confirm('¿Deseas marcar este envío como enviado?')) return;
+
+    this.envioService.cambiarEstadoEnvio(envioId, 'enviado').subscribe({
+      next: () => this.obtenerEnvios(),
+      error: (err) => console.error('Error al actualizar estado del envío', err),
     });
   }
 }

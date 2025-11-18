@@ -1,4 +1,4 @@
-import { CiudadDTO } from './../../models/Ciudad';
+import { CiudadDTO, CiudadResponseList } from './../../models/Ciudad';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/dev';
@@ -10,27 +10,27 @@ import { Observable } from 'rxjs';
 })
 export class CiudadService {
 
-  constructor(private HttpClient : HttpClient) { }
+  constructor(private httpClient : HttpClient) { }
 
 
-  obtenerCiudades() : Observable<CiudadResponse[]> {
-    return this.HttpClient.get<CiudadResponse[]>(`${environment.apiUrl}/ciudades`);
+  obtenerCiudades() : Observable<CiudadResponseList[]> {
+    return this.httpClient.get<CiudadResponseList[]>(`${environment.apiUrl}/ciudades`);
   }
 
   obtenerCiudadPorId(id: number) : Observable<CiudadResponse> {
-    return this.HttpClient.get<CiudadResponse>(`${environment.apiUrl}/ciudades/${id}`);
+    return this.httpClient.get<CiudadResponse>(`${environment.apiUrl}/ciudades/${id}`);
   }
 
   crearCiudad(ciudadDTO : CiudadDTO) : Observable<CiudadResponse> {
-    return this.HttpClient.post<CiudadResponse>(`${environment.apiUrl}/ciudades`, ciudadDTO);
+    return this.httpClient.post<CiudadResponse>(`${environment.apiUrl}/ciudades`, ciudadDTO);
   }
 
   actualizarCiudadPorId(id: number, ciudadDTO : CiudadDTO) : Observable<CiudadResponse> {
-    return this.HttpClient.put<CiudadResponse>(`${environment.apiUrl}/ciudades/${id}`, ciudadDTO);
+    return this.httpClient.put<CiudadResponse>(`${environment.apiUrl}/ciudades/${id}`, ciudadDTO);
   }
 
   eliminarCiudadPorId(id: number) : Observable<string> {
-    return this.HttpClient.delete<string>(`${environment.apiUrl}/ciudades/${id}`);
+    return this.httpClient.delete<string>(`${environment.apiUrl}/ciudades/${id}`);
   }
 
 

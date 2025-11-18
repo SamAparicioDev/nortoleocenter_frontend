@@ -6,7 +6,7 @@ import { throwError } from 'rxjs';
 
 export const interceptorsInterceptor: HttpInterceptorFn = (req, next) => {
   const notyf = inject(NotificacionService);
-  const token = sessionStorage.getItem('token');
+  const token = localStorage.getItem('token');
 
   const authReq = token
     ? req.clone({

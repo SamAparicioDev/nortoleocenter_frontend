@@ -10,16 +10,32 @@
       <div class="col-lg-4 col-md-6 col-12">
         <label>Nombre</label>
         <input type="text" class="form-control" formControlName="nombre" placeholder="Nombre de la finca">
+        <div *ngIf="formFinca.get('nombre')?.invalid && formFinca.get('nombre')?.touched" class="text-danger small">
+          El nombre es obligatorio
+        </div>
       </div>
 
       <div class="col-lg-4 col-md-6 col-12">
-        <label>Ciudad ID</label>
-        <input type="number" class="form-control" formControlName="ciudad_id" placeholder="ID ciudad">
+        <label>Ciudad</label>
+        <select class="form-control" formControlName="ciudad_id">
+          <option value="">Seleccione una ciudad</option>
+          <option *ngFor="let ciudad of ciudades" [value]="ciudad.id">
+            {{ ciudad.nombre }} - {{ ciudad.departamento.nombre }}
+          </option>
+        </select>
+        <div *ngIf="formFinca.get('ciudad_id')?.invalid && formFinca.get('ciudad_id')?.touched"
+          class="text-danger small">
+          Selecciona una ciudad
+        </div>
       </div>
 
       <div class="col-lg-4 col-md-6 col-12">
         <label>Dirección</label>
         <input type="text" class="form-control" formControlName="direccion" placeholder="Dirección">
+        <div *ngIf="formFinca.get('direccion')?.invalid && formFinca.get('direccion')?.touched"
+          class="text-danger small">
+          La dirección es obligatoria
+        </div>
       </div>
 
       <div class="col-12 d-flex justify-content-end mt-2">
@@ -50,7 +66,7 @@
             <tr *ngFor="let finca of fincasPaginadas">
               <td>{{ finca.id }}</td>
               <td>{{ finca.nombre }}</td>
-              <td>{{ finca.ciudad_id }}</td>
+              <td>{{ finca.ciudad.nombre }}</td>
               <td>{{ finca.direccion }}</td>
               <td>
                 <button class="btn btn-warning btn-sm me-2" (click)="editar(finca)">
@@ -84,7 +100,7 @@
             </li>
 
             <li class="page-item" *ngFor="let p of [].constructor(totalPaginas); let i = index"
-                [class.active]="paginaActual === i + 1">
+              [class.active]="paginaActual === i + 1">
               <button class="page-link" (click)="cambiarPagina(i + 1)">{{ i + 1 }}</button>
             </li>
 

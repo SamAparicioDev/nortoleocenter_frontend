@@ -1,1 +1,39 @@
-<p>usuario works!</p>
+<div class="container-fluid mt-4" *ngIf="usuario">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-8 col-xl-7">
+      <div class="card shadow-sm">
+        <div class="card-header text-white">
+          <h4>Mi Perfil</h4>
+        </div>
+
+        <div class="card-body p-4">
+          <form>
+
+            <div class="row">
+
+              <div class="col-12 mb-3">
+                <label class="form-label">Nombre</label>
+                <input type="text" class="form-control" [value]="usuario.name" readonly>
+              </div>
+
+              <!-- Email -->
+              <div class="col-12 mb-3">
+                <label class="form-label">Correo Electrónico</label>
+                <input type="email" class="form-control" [value]="usuario.email" readonly>
+              </div>
+
+              <!-- Rol -->
+              <div class="col-12 mb-3">
+                <label class="form-label">Rol</label>
+                <input type="text" class="form-control" [value]="usuario.rol" readonly>
+              </div>
+
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

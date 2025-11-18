@@ -5,10 +5,9 @@ import { EnvioDTO, EnvioData } from '../../models/Envio';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class EnvioService {
-
   constructor(private httpClient: HttpClient) {}
 
   obtenerEnvios(): Observable<EnvioData[]> {
@@ -24,11 +23,22 @@ export class EnvioService {
   }
 
   guardarEnvio(envio: EnvioDTO): Observable<EnvioData> {
-    return this.httpClient.post<EnvioData>(`${environment.apiUrl}/envios`, envio);
+    return this.httpClient.post<EnvioData>(
+      `${environment.apiUrl}/envios`,
+      envio
+    );
   }
 
   actualizarEnvioPorId(id: number, envio: EnvioDTO): Observable<EnvioData> {
-    return this.httpClient.put<EnvioData>(`${environment.apiUrl}/envios/${id}`, envio);
+    return this.httpClient.put<EnvioData>(
+      `${environment.apiUrl}/envios/${id}`,
+      envio
+    );
+  }
+
+  cambiarEstadoEnvio(id: number, estado: string): Observable<any> {
+    return this.httpClient.patch(`${environment.apiUrl}/cambiar-estado-envio/${id}/${estado}`, {
+    });
   }
 
   eliminarEnvioPorId(id: number): Observable<void> {

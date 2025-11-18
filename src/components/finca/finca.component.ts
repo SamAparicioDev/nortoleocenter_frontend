@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { FincaService } from '../../services/finca/finca.service';
 import { FincaDTO, FincaResponse } from '../../models/Finca';
+import { CiudadResponse, CiudadResponseList } from '../../models/Ciudad';
+import { CiudadService } from '../../services/ciudad/ciudad.service';
 
 @Component({
   selector: 'app-finca',
@@ -15,6 +17,7 @@ export class FincaComponent implements OnInit {
   fincas: FincaResponse[] = [];
   fincasPaginadas: FincaResponse[] = [];
   cargando = false;
+  ciudades : CiudadResponseList[] = [];
 
   paginaActual = 1;
   itemsPorPagina = 5;
@@ -24,11 +27,12 @@ export class FincaComponent implements OnInit {
   editando = false;
   idEditando: number | null = null;
 
-  constructor(private fb: FormBuilder, private fincaService: FincaService) {}
+  constructor(private fb: FormBuilder, private fincaService: FincaService, private ciudadService : CiudadService) {}
 
   ngOnInit(): void {
     this.crearFormulario();
     this.obtenerFincas();
+    this.obtenerCiudades();
   }
 
   crearFormulario() {
@@ -36,6 +40,21 @@ export class FincaComponent implements OnInit {
       nombre: ['', Validators.required],
       ciudad_id: ['', Validators.required],
       direccion: ['', Validators.required],
+    });
+  }
+
+  obtenerCiudades(){
+    this.cargando = true;
+    this.ciudadService.obtenerCiudades().subscribe({
+      next: (resp : CiudadResponseList[]) => {
+        this.ciudades = resp;
+        console.log(resp);
+        this.cargando = false;
+      },
+      error: () => {
+        console.log("error al cargar ciudades");
+        this.cargando = false;
+      },
     });
   }
 
@@ -65,27 +84,29 @@ export class FincaComponent implements OnInit {
   }
 
   enviarFormulario() {
-    if (this.formFinca.invalid) return;
+  if (this.formFinca.invalid) return;
 
-    const dto: FincaDTO = this.formFinca.value;
+  const dto: FincaDTO = this.formFinca.value;
 
-    if (this.editando && this.idEditando !== null) {
-      this.fincaService.actualizarFincaPorId(this.idEditando, dto).subscribe({
-        next: () => {
-          this.obtenerFincas();
-          this.cancelarEdicion();
-        },
-      });
-    } else {
-      this.fincaService.obtenerMisFincas().subscribe({
-        next: () => {
-          this.fincaService.actualizarFincaPorId(this.idEditando!, dto);
-          this.obtenerFincas();
-          this.formFinca.reset();
-        },
-      });
-    }
+  if (this.editando && this.idEditando !== null) {
+    // 🔥 ACTUALIZAR
+    this.fincaService.actualizarFincaPorId(this.idEditando, dto).subscribe({
+      next: () => {
+        this.obtenerFincas();
+        this.cancelarEdicion();
+      }
+    });
+  } else {
+    // 🔥 CREAR
+    this.fincaService.crearFinca(dto).subscribe({
+      next: () => {
+        this.obtenerFincas();
+        this.formFinca.reset();
+      }
+    });
   }
+}
+
 
   editar(finca: FincaResponse) {
     this.editando = true;

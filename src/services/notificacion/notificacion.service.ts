@@ -7,8 +7,8 @@ import 'notyf/notyf.min.css';
 })
 export class NotificacionService {
   private notyf = new Notyf({
-    duration: 3000, // milisegundos
-    position: { x: 'right', y: 'top' }, // esquina superior derecha
+    duration: 3000,
+    position: { x: 'right', y: 'top' }, 
     types: [
       {
         type: 'success',
