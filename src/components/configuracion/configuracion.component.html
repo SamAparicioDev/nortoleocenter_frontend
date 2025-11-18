@@ -1,1 +1,320 @@
-<p>configuracion works!</p>
+<div class="container mt-4">
+  <h2 class="text-center mb-4">Configuración</h2>
+
+  <!-- ======================
+       PESTAÑAS
+  ====================== -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab==='usuarios'" (click)="cambiarTab('usuarios')">Usuarios</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab==='departamentos'" (click)="cambiarTab('departamentos')">Departamentos</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab==='ciudades'" (click)="cambiarTab('ciudades')">Ciudades</a>
+    </li>
+  </ul>
+
+
+  <!-- ======================
+       USUARIOS
+  ====================== -->
+  <div *ngIf="activeTab==='usuarios'">
+
+    <!-- FORMULARIO -->
+    <div class="card shadow-sm p-3 mb-4">
+      <h5>{{ editandoUsuario ? 'Editar Usuario' : 'Nuevo Usuario' }}</h5>
+
+      <form [formGroup]="formUsuario" (ngSubmit)="enviarUsuario()" class="row g-3 mt-2">
+
+        <div class="col-md-4">
+          <label>Nombre</label>
+          <input type="text" class="form-control" formControlName="name">
+        </div>
+
+        <div class="col-md-4">
+          <label>Email</label>
+          <input type="email" class="form-control" formControlName="email">
+        </div>
+
+        <div class="col-md-4">
+          <label>Rol</label>
+          <select class="form-control" formControlName="rol">
+            <option *ngFor="let r of roles" [value]="r[1]">{{ r[0] }}</option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label>Contraseña</label>
+          <input type="password" class="form-control" formControlName="password">
+        </div>
+
+        <div class="col-md-6">
+          <label>Confirmar Contraseña</label>
+          <input type="password" class="form-control" formControlName="password_confirmation">
+        </div>
+
+        <div class="col-12 d-flex justify-content-end mt-3">
+          <button type="submit" class="btn btn-purple me-2">{{ editandoUsuario ? 'Actualizar' : 'Guardar' }}</button>
+          <button *ngIf="editandoUsuario" type="button" class="btn btn-secondary" (click)="cancelarEdicionUsuario()">Cancelar</button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- TABLA -->
+    <div class="card shadow-sm">
+      <div class="card-body p-0">
+
+        <div class="table-responsive">
+          <table class="table table-striped mb-0">
+            <thead class="table-dark">
+              <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Creado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr *ngFor="let u of usuariosPaginados">
+                <td>{{ u.name }}</td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.rol }}</td>
+                <td>{{ u.created_at | date:'short' }}</td>
+                <td>
+                  <button class="btn btn-warning btn-sm me-2" (click)="editarUsuario(u)">Editar</button>
+                  <button class="btn btn-danger btn-sm" (click)="eliminarUsuario(u.id)">Eliminar</button>
+                </td>
+              </tr>
+
+              <tr *ngIf="usuarios.length === 0">
+                <td colspan="5" class="text-center text-muted py-3">
+                  No hay usuarios registrados.
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+        <!-- PAGINACIÓN -->
+        <div class="d-flex justify-content-center py-3">
+          <nav>
+            <ul class="pagination">
+
+              <li class="page-item" [class.disabled]="paginaUsuarios === 1">
+                <button class="page-link" (click)="cambiarPagina('usuarios', paginaUsuarios - 1)">Anterior</button>
+              </li>
+
+              <li class="page-item"
+                  *ngFor="let p of [].constructor(totalPagUsuarios); let i=index"
+                  [class.active]="paginaUsuarios === i + 1">
+                <button class="page-link" (click)="cambiarPagina('usuarios', i + 1)">
+                  {{ i + 1 }}
+                </button>
+              </li>
+
+              <li class="page-item" [class.disabled]="paginaUsuarios === totalPagUsuarios">
+                <button class="page-link" (click)="cambiarPagina('usuarios', paginaUsuarios + 1)">Siguiente</button>
+              </li>
+
+            </ul>
+          </nav>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- ======================
+       DEPARTAMENTOS
+  ====================== -->
+  <div *ngIf="activeTab==='departamentos'">
+
+    <!-- FORMULARIO -->
+    <div class="card shadow-sm p-3 mb-4">
+      <h5>{{ editandoDepartamento ? 'Editar Departamento' : 'Nuevo Departamento' }}</h5>
+
+      <form [formGroup]="formDepartamento" (ngSubmit)="enviarDepartamento()" class="row g-3 mt-2">
+        <div class="col-md-6">
+          <label>Nombre</label>
+          <input type="text" class="form-control" formControlName="nombre">
+        </div>
+
+        <div class="col-12 d-flex justify-content-end mt-3">
+          <button type="submit" class="btn btn-purple me-2">{{ editandoDepartamento ? 'Actualizar' : 'Guardar' }}</button>
+          <button *ngIf="editandoDepartamento" type="button" class="btn btn-secondary" (click)="cancelarEdicionDepartamento()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- TABLA -->
+    <div class="card shadow-sm">
+      <div class="card-body p-0">
+
+        <div class="table-responsive">
+          <table class="table table-striped mb-0">
+            <thead class="table-dark">
+              <tr>
+                <th>Nombre</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr *ngFor="let d of departamentosPaginados">
+                <td>{{ d.nombre }}</td>
+                <td>
+                  <button class="btn btn-warning btn-sm me-2" (click)="editarDepartamento(d)">Editar</button>
+                  <button class="btn btn-danger btn-sm" (click)="eliminarDepartamento(d.id)">Eliminar</button>
+                </td>
+              </tr>
+
+              <tr *ngIf="departamentos.length === 0">
+                <td colspan="2" class="text-center text-muted py-3">
+                  No hay departamentos registrados.
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+
+        <!-- PAGINACIÓN -->
+        <div class="d-flex justify-content-center py-3">
+          <nav>
+            <ul class="pagination">
+
+              <li class="page-item" [class.disabled]="paginaDepartamentos === 1">
+                <button class="page-link" (click)="cambiarPagina('departamentos', paginaDepartamentos - 1)">Anterior</button>
+              </li>
+
+              <li class="page-item"
+                  *ngFor="let p of [].constructor(totalPagDepartamentos); let i=index"
+                  [class.active]="paginaDepartamentos === i + 1">
+                <button class="page-link" (click)="cambiarPagina('departamentos', i + 1)">
+                  {{ i + 1 }}
+                </button>
+              </li>
+
+              <li class="page-item" [class.disabled]="paginaDepartamentos === totalPagDepartamentos">
+                <button class="page-link" (click)="cambiarPagina('departamentos', paginaDepartamentos + 1)">Siguiente</button>
+              </li>
+
+            </ul>
+          </nav>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- ======================
+       CIUDADES
+  ====================== -->
+  <div *ngIf="activeTab==='ciudades'">
+
+    <!-- FORMULARIO -->
+    <div class="card shadow-sm p-3 mb-4">
+      <h5>{{ editandoCiudad ? 'Editar Ciudad' : 'Nueva Ciudad' }}</h5>
+
+      <form [formGroup]="formCiudad" (ngSubmit)="enviarCiudad()" class="row g-3 mt-2">
+
+        <div class="col-md-6">
+          <label>Nombre</label>
+          <input type="text" class="form-control" formControlName="nombre">
+        </div>
+
+        <div class="col-md-6">
+          <label>Departamento</label>
+          <select class="form-control" formControlName="departamento_id">
+            <option value="">Selecciona un departamento</option>
+            <option *ngFor="let d of departamentos" [value]="d.id">{{ d.nombre }}</option>
+          </select>
+        </div>
+
+        <div class="col-12 d-flex justify-content-end mt-3">
+          <button type="submit" class="btn btn-purple me-2">{{ editandoCiudad ? 'Actualizar' : 'Guardar' }}</button>
+          <button *ngIf="editandoCiudad" type="button" class="btn btn-secondary" (click)="cancelarEdicionCiudad()">Cancelar</button>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- TABLA -->
+    <div class="card shadow-sm">
+      <div class="card-body p-0">
+
+        <div class="table-responsive">
+          <table class="table table-striped mb-0">
+            <thead class="table-dark">
+              <tr>
+                <th>Nombre</th>
+                <th>Departamento</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr *ngFor="let c of ciudadesPaginadas">
+                <td>{{ c.nombre }}</td>
+                <td>{{ c.departamento.nombre }}</td>
+                <td>
+                  <button class="btn btn-warning btn-sm me-2" (click)="editarCiudad(c)">Editar</button>
+                  <button class="btn btn-danger btn-sm" (click)="eliminarCiudad(c.id)">Eliminar</button>
+                </td>
+              </tr>
+
+              <tr *ngIf="ciudades.length === 0">
+                <td colspan="3" class="text-center text-muted py-3">
+                  No hay ciudades registradas.
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+
+        <!-- PAGINACIÓN -->
+        <div class="d-flex justify-content-center py-3">
+          <nav>
+            <ul class="pagination">
+
+              <li class="page-item" [class.disabled]="paginaCiudades === 1">
+                <button class="page-link" (click)="cambiarPagina('ciudades', paginaCiudades - 1)">Anterior</button>
+              </li>
+
+              <li class="page-item"
+                  *ngFor="let p of [].constructor(totalPagCiudades); let i=index"
+                  [class.active]="paginaCiudades === i + 1">
+                <button class="page-link" (click)="cambiarPagina('ciudades', i + 1)">
+                  {{ i + 1 }}
+                </button>
+              </li>
+
+              <li class="page-item" [class.disabled]="paginaCiudades === totalPagCiudades">
+                <button class="page-link" (click)="cambiarPagina('ciudades', paginaCiudades + 1)">Siguiente</button>
+              </li>
+
+            </ul>
+          </nav>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>

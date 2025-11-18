@@ -52,11 +52,8 @@ h2 {
   background-color: #5a1f60;
 }
 
-.btn-danger {
-  background-color: #C62828;
-  border: none;
-  border-radius: 8px;
-}
+
+
 
 .btn-danger:hover {
   background-color: #9f1f1f;

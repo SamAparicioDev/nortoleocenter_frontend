@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { RecepcionService } from '../../services/recepcion/recepcion.service';
 import { EnvioService } from '../../services/envio/envio.service';
 import { EnvioData } from '../../models/Envio';
+import { NotificacionService } from '../../services/notificacion/notificacion.service'; // <-- IMPORTANTE
 
 @Component({
   selector: 'app-recepcion',
@@ -35,7 +36,8 @@ export class RecepcionComponent implements OnInit {
   constructor(
     private recepcionService: RecepcionService,
     private envioService: EnvioService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private notificacion: NotificacionService // <-- SERVICIO
   ) {}
 
   ngOnInit(): void {
@@ -45,9 +47,13 @@ export class RecepcionComponent implements OnInit {
   }
 
   obtenerEnvios() {
-    this.envioService.obtenerMisEnvios().subscribe((response) => {
-        this.envios = response;
-        this.envios = this.envios.filter((e) => e.estado === "pendiente");
+    this.envioService.obtenerMisEnvios().subscribe({
+      next: (response) => {
+        this.envios = response.filter((e) => e.estado === 'enviado');
+      },
+      error: () => {
+        this.notificacion.error('Error cargando envíos disponibles');
+      },
     });
   }
 
@@ -84,44 +90,50 @@ export class RecepcionComponent implements OnInit {
         this.cargando = false;
       },
       error: (err) => {
-        console.error('Error cargando recepciones:', err);
+        this.notificacion.error('Error cargando recepciones');
         this.cargando = false;
       },
     });
   }
 
   enviarFormulario() {
-    if (this.formRecepcion.invalid) return;
+    if (this.formRecepcion.invalid) {
+      this.notificacion.warning('Completa todos los campos obligatorios');
+      return;
+    }
 
     const dto: RecepcionDTO = this.formRecepcion.value;
 
     if (this.editando && this.idEditando !== null) {
-      // Actualización normal
-      this.recepcionService
-        .actualizarRecepcion(this.idEditando, dto)
-        .subscribe({
-          next: () => {
-            this.obtenerRecepciones();
-            this.cancelarEdicion();
-          },
-        });
+      // 🔥 ACTUALIZAR RECEPCIÓN
+      this.recepcionService.actualizarRecepcion(this.idEditando, dto).subscribe({
+        next: () => {
+          this.obtenerRecepciones();
+          this.cancelarEdicion();
+          this.notificacion.success('Recepción actualizada correctamente');
+        },
+        error: () => {
+          this.notificacion.error('Error actualizando la recepción');
+        },
+      });
     } else {
-      // CREACIÓN: cambiamos el estado del envío a "recibido"
+      // 🔥 CREAR RECEPCIÓN + actualizar estado del envío
       this.recepcionService.crearRecepcion(dto).subscribe({
         next: () => {
-          this.envioService
-            .cambiarEstadoEnvio(dto.envio_id, 'recibido')
-            .subscribe({
-              next: () => {
-                console.log('Estado del envío actualizado a recibido');
-                this.obtenerRecepciones(); // Solo aquí refrescamos la lista
-                this.formRecepcion.reset();
-              },
-              error: (err) =>
-                console.error('Error actualizando estado del envío', err),
-            });
+          this.envioService.cambiarEstadoEnvio(dto.envio_id, 'recibido').subscribe({
+            next: () => {
+              this.obtenerRecepciones();
+              this.formRecepcion.reset();
+              this.notificacion.success('Recepción registrada correctamente');
+            },
+            error: () => {
+              this.notificacion.error('Recepción creada, pero falló actualizar el estado del envío');
+            },
+          });
         },
-        error: (err) => console.error('Error creando la recepción', err),
+        error: () => {
+          this.notificacion.error('Error creando la recepción');
+        },
       });
     }
   }
@@ -141,6 +153,7 @@ export class RecepcionComponent implements OnInit {
     this.editando = false;
     this.idEditando = null;
     this.formRecepcion.reset();
+    this.notificacion.warning('Edición cancelada');
   }
 
   eliminar(id: number) {
@@ -149,8 +162,11 @@ export class RecepcionComponent implements OnInit {
     this.recepcionService.eliminarRecepcion(id).subscribe({
       next: () => {
         this.obtenerRecepciones();
+        this.notificacion.success('Recepción eliminada correctamente');
       },
-      error: (err) => console.error('Error eliminando la recepción', err),
+      error: () => {
+        this.notificacion.error('Error eliminando la recepción');
+      },
     });
   }
 }

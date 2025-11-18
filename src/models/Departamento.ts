@@ -18,7 +18,10 @@ export interface DepartamentoResponse {
 
 
 export interface DepartamentoListResponse {
-  data : Data;
+    id: number;
+  nombre: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Departamento {

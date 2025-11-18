@@ -5,6 +5,7 @@ import { LoteDTO, LoteResponse } from '../../models/Lote';
 import { FincaResponse } from '../../models/Finca';
 import { LoteService } from '../../services/lote/lote.service';
 import { FincaService } from '../../services/finca/finca.service';
+import { NotificacionService } from '../../services/notificacion/notificacion.service';
 
 @Component({
   selector: 'app-lote',
@@ -19,7 +20,7 @@ export class LoteComponent implements OnInit {
   lotesPaginados: LoteResponse[] = [];
   cargando: boolean = false;
 
-  fincas: FincaResponse[] = []; // <--- AQUÍ GUARDAMOS LAS FINCAS
+  fincas: FincaResponse[] = [];
 
   paginaActual = 1;
   itemsPorPagina = 10;
@@ -32,13 +33,14 @@ export class LoteComponent implements OnInit {
   constructor(
     private loteService: LoteService,
     private fincaService: FincaService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private notificacion: NotificacionService
   ) {}
 
   ngOnInit(): void {
     this.crearFormulario();
     this.obtenerLotes();
-    this.obtenerFincas();  // <--- Cargar fincas
+    this.obtenerFincas();
   }
 
   crearFormulario() {
@@ -54,7 +56,9 @@ export class LoteComponent implements OnInit {
       next: (resp) => {
         this.fincas = resp;
       },
-      error: (err) => console.error("Error cargando fincas:", err)
+      error: () => {
+        this.notificacion.error('Error cargando fincas');
+      }
     });
   }
 
@@ -80,32 +84,43 @@ export class LoteComponent implements OnInit {
         this.actualizarPaginacion();
         this.cargando = false;
       },
-      error: (err) => {
-        console.error("Error cargando lotes:", err);
+      error: () => {
+        this.notificacion.error('Error cargando lotes');
         this.cargando = false;
       }
     });
   }
 
   enviarFormulario() {
-    if (this.formLote.invalid) return;
+    if (this.formLote.invalid) {
+      this.notificacion.error('Todos los campos son obligatorios');
+      return;
+    }
 
     const dto: LoteDTO = this.formLote.value;
 
     if (this.editando && this.idEditando !== null) {
+
       this.loteService.actualizarLotePorId(this.idEditando, dto).subscribe({
         next: () => {
+          this.notificacion.success('Lote actualizado correctamente');
           this.obtenerLotes();
           this.cancelarEdicion();
-        }
+        },
+        error: () => this.notificacion.error('Error actualizando lote'),
       });
+
     } else {
+
       this.loteService.crearLote(dto).subscribe({
         next: () => {
+          this.notificacion.success('Lote creado correctamente');
           this.obtenerLotes();
           this.formLote.reset();
-        }
+        },
+        error: () => this.notificacion.error('Error creando lote'),
       });
+
     }
   }
 
@@ -131,8 +146,10 @@ export class LoteComponent implements OnInit {
 
     this.loteService.eliminarLotePorId(id).subscribe({
       next: () => {
+        this.notificacion.warning('Lote eliminado');
         this.obtenerLotes();
-      }
+      },
+      error: () => this.notificacion.error('Error eliminando el lote'),
     });
   }
 }

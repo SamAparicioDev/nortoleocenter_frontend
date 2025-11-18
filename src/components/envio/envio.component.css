@@ -25,10 +25,13 @@ h2 {
   background-color: #6f42c1; /* morado Bootstrap similar */
   color: white;
   border: none;
+  border-radius: 8px;
 }
 
 .btn-morado:hover {
-  background-color: #5936a2; /* morado más oscuro al hover */
+  background-color: #5936a2;
+  border: none;
+  border-radius: 8px;/* morado más oscuro al hover */
 }
 
 
@@ -65,8 +68,6 @@ h2 {
 
 .btn-danger {
   background-color: #C62828;
-  border: none;
-  border-radius: 8px;
 }
 
 .btn-danger:hover {

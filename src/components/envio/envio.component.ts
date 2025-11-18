@@ -7,6 +7,7 @@ import { FincaService } from '../../services/finca/finca.service';
 import { FincaResponse } from '../../models/Finca';
 import { LoteService } from '../../services/lote/lote.service';
 import { LoteResponse } from '../../models/Lote';
+import { NotificacionService } from '../../services/notificacion/notificacion.service'; // <-- IMPORTANTE
 
 @Component({
   selector: 'app-envio',
@@ -35,7 +36,8 @@ export class EnvioComponent implements OnInit {
     private fb: FormBuilder,
     private envioService: EnvioService,
     private fincaService: FincaService,
-    private loteService: LoteService
+    private loteService: LoteService,
+    private notificacion: NotificacionService // <-- INYECTAR SERVICIO
   ) {}
 
   ngOnInit(): void {
@@ -62,14 +64,18 @@ export class EnvioComponent implements OnInit {
   obtenerMisFincas() {
     this.fincaService.obtenerMisFincas().subscribe({
       next: (resp) => (this.fincas = resp),
-      error: () => console.error('Error cargando fincas'),
+      error: () => {
+        this.notificacion.error('Error cargando fincas');
+      }
     });
   }
 
   obtenerLotesPorFinca(fincaId: number) {
     this.loteService.obtenerLotesPorFincaId(fincaId).subscribe({
       next: (resp) => (this.lotes = resp),
-      error: () => console.error('Error cargando lotes'),
+      error: () => {
+        this.notificacion.error('Error cargando lotes');
+      },
     });
   }
 
@@ -82,7 +88,10 @@ export class EnvioComponent implements OnInit {
         this.actualizarPaginacion();
         this.cargando = false;
       },
-      error: () => (this.cargando = false),
+      error: () => {
+        this.cargando = false;
+        this.notificacion.error('Error cargando envíos');
+      }
     });
   }
 
@@ -99,7 +108,10 @@ export class EnvioComponent implements OnInit {
   }
 
   enviarFormulario() {
-    if (this.formEnvio.invalid) return;
+    if (this.formEnvio.invalid) {
+      this.notificacion.warning('Completa todos los campos obligatorios');
+      return;
+    }
 
     const dto: EnvioDTO = this.formEnvio.value;
 
@@ -108,8 +120,12 @@ export class EnvioComponent implements OnInit {
         next: () => {
           this.obtenerEnvios();
           this.cancelarEdicion();
+          this.notificacion.success('Envío actualizado correctamente');
         },
-        error: (err) => console.error('Error al actualizar:', err),
+        error: (err) => {
+          console.error(err);
+          this.notificacion.error('Error al actualizar el envío');
+        },
       });
     } else {
       this.envioService.guardarEnvio(dto).subscribe({
@@ -117,8 +133,12 @@ export class EnvioComponent implements OnInit {
           this.obtenerEnvios();
           this.formEnvio.reset();
           this.lotes = [];
+          this.notificacion.success('Envío registrado correctamente');
         },
-        error: (err) => console.error('Error al guardar:', err),
+        error: (err) => {
+          console.error(err);
+          this.notificacion.error('Error al guardar el envío');
+        },
       });
     }
   }
@@ -140,13 +160,20 @@ export class EnvioComponent implements OnInit {
     this.idEditando = null;
     this.formEnvio.reset();
     this.lotes = [];
+    this.notificacion.warning('Edición cancelada');
   }
 
   eliminar(id: number) {
     if (!confirm('¿Seguro que deseas eliminar este envío?')) return;
 
     this.envioService.eliminarEnvioPorId(id).subscribe({
-      next: () => this.obtenerEnvios(),
+      next: () => {
+        this.obtenerEnvios();
+        this.notificacion.success('Envío eliminado correctamente');
+      },
+      error: () => {
+        this.notificacion.error('Error al eliminar el envío');
+      }
     });
   }
 
@@ -154,8 +181,13 @@ export class EnvioComponent implements OnInit {
     if (!confirm('¿Deseas marcar este envío como enviado?')) return;
 
     this.envioService.cambiarEstadoEnvio(envioId, 'enviado').subscribe({
-      next: () => this.obtenerEnvios(),
-      error: (err) => console.error('Error al actualizar estado del envío', err),
+      next: () => {
+        this.obtenerEnvios();
+        this.notificacion.success('Envío marcado como enviado');
+      },
+      error: () => {
+        this.notificacion.error('Error al cambiar el estado');
+      }
     });
   }
 }
