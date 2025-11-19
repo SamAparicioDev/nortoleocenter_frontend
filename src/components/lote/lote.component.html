@@ -64,7 +64,7 @@
             <tr *ngFor="let l of lotesPaginados">
               <td>{{ l.id }}</td>
               <td>{{ l.nombre }}</td>
-              <td>{{ l.finca_id }}</td>
+              <td>{{ l.finca.nombre }}</td>
               <td>{{ l.area_m2 }}</td>
               <td>{{ l.created_at | date:'short' }}</td>
 

@@ -86,11 +86,12 @@
               <td>
                 <span class="badge bg-primary">{{e.estado}}</span>
               <td>
-                <button class="btn btn-warning btn-sm me-2" (click)="editar(e)">
+                <button *ngIf="e.estado === 'pendiente'"  class="btn btn-warning btn-sm me-2" (click)="editar(e)">
                   Editar
                 </button>
+                <span *ngIf="e.estado != 'pendiente'">Envio finalizado</span>
 
-                <button class="btn btn-danger btn-sm" (click)="eliminar(e.id)">
+                <button *ngIf="e.estado === 'pendiente'" class="btn btn-danger btn-sm" (click)="eliminar(e.id)">
                   Eliminar
                 </button>
 

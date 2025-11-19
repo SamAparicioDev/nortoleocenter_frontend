@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LoteDTO, LoteResponse } from '../../models/Lote';
+import { Lote, LoteDTO, LoteResponse } from '../../models/Lote';
 import { FincaResponse } from '../../models/Finca';
 import { LoteService } from '../../services/lote/lote.service';
 import { FincaService } from '../../services/finca/finca.service';
@@ -16,8 +16,8 @@ import { NotificacionService } from '../../services/notificacion/notificacion.se
 })
 export class LoteComponent implements OnInit {
 
-  lotes: LoteResponse[] = [];
-  lotesPaginados: LoteResponse[] = [];
+  lotes: Lote[] = [];
+  lotesPaginados: Lote[] = [];
   cargando: boolean = false;
 
   fincas: FincaResponse[] = [];
@@ -78,7 +78,7 @@ export class LoteComponent implements OnInit {
     this.cargando = true;
 
     this.loteService.obtenerLotes().subscribe({
-      next: (resp: LoteResponse[]) => {
+      next: (resp: Lote[]) => {
         this.lotes = resp;
         this.totalPaginas = Math.ceil(this.lotes.length / this.itemsPorPagina);
         this.actualizarPaginacion();

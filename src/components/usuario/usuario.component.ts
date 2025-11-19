@@ -1,44 +1,113 @@
 import { Component, OnInit } from '@angular/core';
-import { NgIf } from '@angular/common';
-import { UserById } from '../../models/User';
+import { CommonModule } from '@angular/common';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+  AbstractControl,
+  ValidationErrors,
+} from '@angular/forms';
 import { UsuarioService } from '../../services/usuario/usuario.service';
+import { UserById, UserDTO } from '../../models/User';
+import { NotificacionService } from '../../services/notificacion/notificacion.service';
 
 @Component({
   selector: 'app-usuario',
   standalone: true,
-  imports: [NgIf],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './usuario.component.html',
-  styleUrl: './usuario.component.css'
+  styleUrls: ['./usuario.component.css'],
 })
 export class UsuarioComponent implements OnInit {
-
   usuario!: UserById;
+  formUsuario!: FormGroup;
+  editando = false;
 
-  constructor(private usuarioService: UsuarioService) {}
+  constructor(
+    private usuarioService: UsuarioService,
+    private fb: FormBuilder,
+    private notificacion: NotificacionService
+  ) {}
 
   ngOnInit(): void {
-
-    // 1. Obtener el userData guardado en localStorage
     const storedUser = localStorage.getItem('userData');
+    if (!storedUser) return;
 
-    if (!storedUser) {
-      console.error('No se encontró userData en localStorage');
-      return;
-    }
-
-    // 2. Convertirlo en objeto
     const parsedUser = JSON.parse(storedUser) as UserById;
+    const userId = parsedUser.id;
 
-    const userId = parsedUser.id;  // ← El ID del usuario logueado
-
-    // 3. Llamar al servicio para obtener datos completos por ID
     this.usuarioService.obtenerUsuarioPorId(userId).subscribe({
       next: (data) => {
         this.usuario = data;
+        this.crearFormulario();
       },
       error: (err) => {
         console.error('Error cargando usuario:', err);
-      }
+      },
     });
   }
+
+  crearFormulario() {
+    this.formUsuario = this.fb.group(
+      {
+        name: [this.usuario.name, Validators.required],
+        email: [this.usuario.email, [Validators.required, Validators.email]],
+        password: [''],
+        password_confirmation: [''],
+      },
+      { validators: this.passwordsCoinciden }
+    );
+  }
+
+  passwordsCoinciden(group: AbstractControl): ValidationErrors | null {
+    const pass = group.get('password')?.value;
+    const confirm = group.get('password_confirmation')?.value;
+    if (pass && confirm && pass !== confirm) {
+      return { noCoinciden: true };
+    }
+    return null;
+  }
+
+  habilitarEdicion() {
+    this.editando = true;
+  }
+
+  cancelarEdicion() {
+    this.editando = false;
+    this.formUsuario.reset({
+      name: this.usuario.name,
+      email: this.usuario.email,
+      password: '',
+      password_confirmation: '',
+    });
+  }
+
+ guardarCambios() {
+  if (this.formUsuario.invalid) {
+    this.notificacion.warning('Completa correctamente el formulario');
+    return;
+  }
+
+  const { name, email, password, password_confirmation } = this.formUsuario.value;
+  const dto: Partial<UserDTO> = { name, email };
+
+  if (password) {
+    dto['password'] = password;
+    dto['password_confirmation'] = password_confirmation; // 🔥 agregar confirmación
+  }
+
+  this.usuarioService.actualizarUsuario(this.usuario.id, dto).subscribe({
+    next: (resp) => {
+      this.notificacion.success('Perfil actualizado correctamente');
+      this.editando = false;
+      Object.assign(this.usuario, { name, email }); // actualizar local
+      this.formUsuario.patchValue({ password: '', password_confirmation: '' });
+    },
+    error: (err) => {
+      console.error(err);
+      this.notificacion.error('Error al actualizar el perfil');
+    }
+  });
+ }
 }

@@ -87,8 +87,9 @@
                 <td>{{ u.rol }}</td>
                 <td>{{ u.created_at | date:'short' }}</td>
                 <td>
-                  <button class="btn btn-warning btn-sm me-2" (click)="editarUsuario(u)">Editar</button>
-                  <button class="btn btn-danger btn-sm" (click)="eliminarUsuario(u.id)">Eliminar</button>
+                  <button *ngIf="u.rol != 'admin'" class="btn btn-warning btn-sm me-2" (click)="editarUsuario(u)">Editar</button>
+                  <span *ngIf="u.rol === 'admin'">Usuario administrador</span>
+                  <button *ngIf="u.rol != 'admin'" class="btn btn-danger btn-sm" (click)="eliminarUsuario(u.id)">Eliminar</button>
                 </td>
               </tr>
 

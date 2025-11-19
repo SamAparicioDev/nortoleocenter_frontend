@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/dev';
-import { LoteDTO, LoteResponse } from '../../models/Lote';
+import { Lote, LoteDTO, LoteResponse } from '../../models/Lote';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -11,8 +11,8 @@ export class LoteService {
 
   constructor(private httpClient: HttpClient) { }
 
-  obtenerLotes(): Observable<LoteResponse[]> {
-    return this.httpClient.get<LoteResponse[]>(`${environment.apiUrl}/lotes`);
+  obtenerLotes(): Observable<Lote[]> {
+    return this.httpClient.get<Lote[]>(`${environment.apiUrl}/lotes`);
   }
 
   obtenerLotePorId(id: number): Observable<LoteResponse> {

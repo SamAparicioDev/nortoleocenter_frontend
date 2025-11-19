@@ -2,12 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule, NgIf } from '@angular/common';
 import { EnvioService } from '../../services/envio/envio.service';
-import { EnvioDTO, EnvioData } from '../../models/Envio';
+import { EnvioDTO } from '../../models/Envio';
 import { FincaService } from '../../services/finca/finca.service';
 import { FincaResponse } from '../../models/Finca';
 import { LoteService } from '../../services/lote/lote.service';
 import { LoteResponse } from '../../models/Lote';
 import { NotificacionService } from '../../services/notificacion/notificacion.service'; // <-- IMPORTANTE
+import { EnvioData } from '../../models/Recepcion';
 
 @Component({
   selector: 'app-envio',

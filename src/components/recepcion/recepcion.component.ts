@@ -1,16 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { RecepcionData, RecepcionDTO } from '../../models/Recepcion';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RecepcionService } from '../../services/recepcion/recepcion.service';
 import { EnvioService } from '../../services/envio/envio.service';
-import { EnvioData } from '../../models/Envio';
-import { NotificacionService } from '../../services/notificacion/notificacion.service'; // <-- IMPORTANTE
+import { NotificacionService } from '../../services/notificacion/notificacion.service';
+import { RecepcionData, RecepcionDTO, EnvioData } from '../../models/Recepcion';
 
 @Component({
   selector: 'app-recepcion',
@@ -22,7 +16,8 @@ import { NotificacionService } from '../../services/notificacion/notificacion.se
 export class RecepcionComponent implements OnInit {
   recepciones: RecepcionData[] = [];
   recepcionesPaginadas: RecepcionData[] = [];
-  cargando: boolean = false;
+  cargando = false;
+
   envios: EnvioData[] = [];
 
   paginaActual = 1;
@@ -30,38 +25,63 @@ export class RecepcionComponent implements OnInit {
   totalPaginas = 0;
 
   formRecepcion!: FormGroup;
-  editando: boolean = false;
+  editando = false;
   idEditando: number | null = null;
 
   constructor(
+    private fb: FormBuilder,
     private recepcionService: RecepcionService,
     private envioService: EnvioService,
-    private fb: FormBuilder,
-    private notificacion: NotificacionService // <-- SERVICIO
+    private notificacion: NotificacionService
   ) {}
 
   ngOnInit(): void {
     this.crearFormulario();
-    this.obtenerRecepciones();
     this.obtenerEnvios();
-  }
-
-  obtenerEnvios() {
-    this.envioService.obtenerMisEnvios().subscribe({
-      next: (response) => {
-        this.envios = response.filter((e) => e.estado === 'enviado');
-      },
-      error: () => {
-        this.notificacion.error('Error cargando envíos disponibles');
-      },
-    });
+    this.obtenerRecepciones();
   }
 
   crearFormulario() {
     this.formRecepcion = this.fb.group({
-      envio_id: ['', Validators.required],
-      precio_kg: ['', Validators.required],
-      peso_recibido_kg: ['', Validators.required],
+      envio_id: [null, Validators.required],
+      precio_kg: ['', [Validators.required, Validators.min(1)]],
+      peso_recibido_kg: ['', [Validators.required, Validators.min(1)]],
+    });
+  }
+obtenerEnvios() {
+  this.envioService.obtenerMisEnvios().subscribe({
+    next: (resp) => {
+      this.envios = resp
+        .filter(e => e.estado === 'enviado')
+        .map(e => ({
+          ...e,
+          peso_kg: String(e.peso_kg), 
+          productor: e.productor,
+          finca: e.finca ?? null,
+          lote: e.lote ?? null
+        }));
+    },
+    error: () => {
+      this.notificacion.error('Error cargando envíos disponibles');
+    },
+  });
+}
+
+
+
+  obtenerRecepciones() {
+    this.cargando = true;
+    this.recepcionService.obtenerRecepciones().subscribe({
+      next: (resp: RecepcionData[]) => {
+        this.recepciones = resp;
+        this.totalPaginas = Math.ceil(this.recepciones.length / this.itemsPorPagina);
+        this.actualizarPaginacion();
+        this.cargando = false;
+      },
+      error: () => {
+        this.cargando = false;
+        this.notificacion.error('Error cargando recepciones');
+      },
     });
   }
 
@@ -77,75 +97,63 @@ export class RecepcionComponent implements OnInit {
     this.actualizarPaginacion();
   }
 
-  obtenerRecepciones(): void {
-    this.cargando = true;
-
-    this.recepcionService.obtenerRecepciones().subscribe({
-      next: (resp: RecepcionData[]) => {
-        this.recepciones = resp;
-        this.totalPaginas = Math.ceil(
-          this.recepciones.length / this.itemsPorPagina
-        );
-        this.actualizarPaginacion();
-        this.cargando = false;
-      },
-      error: (err) => {
-        this.notificacion.error('Error cargando recepciones');
-        this.cargando = false;
-      },
-    });
-  }
-
   enviarFormulario() {
     if (this.formRecepcion.invalid) {
-      this.notificacion.warning('Completa todos los campos obligatorios');
+      this.notificacion.warning('Completa todos los campos del formulario');
       return;
     }
 
     const dto: RecepcionDTO = this.formRecepcion.value;
 
-    if (this.editando && this.idEditando !== null) {
-      // 🔥 ACTUALIZAR RECEPCIÓN
-      this.recepcionService.actualizarRecepcion(this.idEditando, dto).subscribe({
-        next: () => {
-          this.obtenerRecepciones();
-          this.cancelarEdicion();
-          this.notificacion.success('Recepción actualizada correctamente');
-        },
-        error: () => {
-          this.notificacion.error('Error actualizando la recepción');
-        },
-      });
+    if (this.editando && this.idEditando) {
+      this.actualizarRecepcion(dto);
     } else {
-      // 🔥 CREAR RECEPCIÓN + actualizar estado del envío
-      this.recepcionService.crearRecepcion(dto).subscribe({
-        next: () => {
-          this.envioService.cambiarEstadoEnvio(dto.envio_id, 'recibido').subscribe({
-            next: () => {
-              this.obtenerRecepciones();
-              this.formRecepcion.reset();
-              this.notificacion.success('Recepción registrada correctamente');
-            },
-            error: () => {
-              this.notificacion.error('Recepción creada, pero falló actualizar el estado del envío');
-            },
-          });
-        },
-        error: () => {
-          this.notificacion.error('Error creando la recepción');
-        },
-      });
+      this.crearRecepcion(dto);
     }
+  }
+
+  private crearRecepcion(dto: RecepcionDTO) {
+    this.recepcionService.crearRecepcion(dto).subscribe({
+      next: () => {
+        this.envioService.cambiarEstadoEnvio(dto.envio_id, 'recibido').subscribe({
+          next: () => {
+            this.obtenerRecepciones();
+            this.formRecepcion.reset();
+            this.notificacion.success('Recepción registrada correctamente');
+          },
+          error: () => {
+            this.notificacion.error('Recepción creada, pero no se actualizó el envío');
+          },
+        });
+      },
+      error: () => {
+        this.notificacion.error('Error creando la recepción');
+      },
+    });
+  }
+
+  private actualizarRecepcion(dto: RecepcionDTO) {
+    if (!this.idEditando) return;
+    this.recepcionService.actualizarRecepcion(this.idEditando, dto).subscribe({
+      next: () => {
+        this.obtenerRecepciones();
+        this.cancelarEdicion();
+        this.notificacion.success('Recepción actualizada correctamente');
+      },
+      error: () => {
+        this.notificacion.error('Error actualizando la recepción');
+      },
+    });
   }
 
   editar(recepcion: RecepcionData) {
     this.editando = true;
     this.idEditando = recepcion.id;
 
-    this.formRecepcion.setValue({
+    this.formRecepcion.patchValue({
       envio_id: recepcion.envio_id,
       precio_kg: recepcion.precio_kg,
-      peso_recibido_kg: recepcion.peso_recibido_kg,
+      peso_recibido_kg: parseFloat(recepcion.peso_recibido_kg),
     });
   }
 

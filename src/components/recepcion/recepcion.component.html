@@ -2,46 +2,51 @@
   <h2 class="text-center mb-4">Recepciones</h2>
 
   <!-- Formulario -->
-  <div class="card shadow-sm p-3 mb-4">
-    <h5 class="mb-3">{{ editando ? 'Editar Recepción' : 'Nueva Recepción' }}</h5>
+<div class="card shadow-sm p-3 mb-4">
+  <h5 class="mb-3">{{ editando ? 'Editar Recepción' : 'Nueva Recepción' }}</h5>
 
-    <form [formGroup]="formRecepcion" (ngSubmit)="enviarFormulario()" class="row g-3">
+  <form [formGroup]="formRecepcion" (ngSubmit)="enviarFormulario()" class="row g-3">
 
-      <div class="col-md-4">
-        <label>Envio</label>
-        <select class="form-select" formControlName="envio_id" >
-          <option value="">Seleccione...</option>
-          <option *ngFor="let e of envios" [value]="e.id">
-            {{ e.codigo_envio }} - {{ e.finca.nombre}}
-          </option>
-        </select>
+    <div class="col-md-4">
+      <label>Envío</label>
+      <select class="form-select" formControlName="envio_id">
+        <option [ngValue]="null">Seleccione...</option>
+        <option *ngFor="let e of envios" [ngValue]="e.id">
+          {{ e.codigo_envio }} - {{ e.finca.nombre }}
+        </option>
+      </select>
+      <div *ngIf="formRecepcion.get('envio_id')?.invalid && formRecepcion.get('envio_id')?.touched"
+        class="text-danger small">
+        Selecciona un envío
       </div>
+    </div>
 
-      <div class="col-md-4">
-        <label>Precio por kg (COP)</label>
-        <input type="number" class="form-control" formControlName="precio_kg">
+    <div class="col-md-4">
+      <label>Precio por kg (COP)</label>
+      <input type="number" class="form-control" formControlName="precio_kg">
+      <div *ngIf="formRecepcion.get('precio_kg')?.invalid && formRecepcion.get('precio_kg')?.touched"
+        class="text-danger small">
+        Ingresa el precio
       </div>
+    </div>
 
-      <div class="col-md-4">
-        <label>Peso recibido (En Kg)</label>
-        <input type="number" class="form-control" formControlName="peso_recibido_kg">
+    <div class="col-md-4">
+      <label>Peso recibido (Kg)</label>
+      <input type="number" class="form-control" formControlName="peso_recibido_kg">
+      <div *ngIf="formRecepcion.get('peso_recibido_kg')?.invalid && formRecepcion.get('peso_recibido_kg')?.touched"
+        class="text-danger small">
+        Ingresa la cantidad recibida
       </div>
+    </div>
 
-      <div class="col-12 text-end">
-        <button class="btn btn-success me-2">
-          {{ editando ? 'Actualizar' : 'Guardar' }}
-        </button>
+    <div class="col-12 text-end">
+      <button class="btn btn-success me-2">{{ editando ? 'Actualizar' : 'Guardar' }}</button>
+      <button *ngIf="editando" type="button" class="btn btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
+    </div>
 
-        <button
-          *ngIf="editando"
-          type="button"
-          class="btn btn-secondary"
-          (click)="cancelarEdicion()">
-          Cancelar
-        </button>
-      </div>
-    </form>
-  </div>
+  </form>
+</div>
+
 
   <!-- Tabla -->
   <div class="card shadow-sm">
@@ -51,6 +56,7 @@
           <thead class="table-dark">
             <tr>
               <th>ID</th>
+              <th>Codigo del envio</th>
               <th>Fecha</th>
               <th>Peso (Kg)</th>
               <th>Total</th>
@@ -63,6 +69,7 @@
           <tbody>
             <tr *ngFor="let r of recepcionesPaginadas">
               <td>{{ r.id }}</td>
+              <td>{{ r.envio.codigo_envio}}</td>
               <td>{{ r.fecha_recepcion | date:'short' }}</td>
               <td>{{ r.peso_recibido_kg }}</td>
               <td>{{ r.total | currency:'COP' }}</td>
