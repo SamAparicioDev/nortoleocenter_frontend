@@ -1,7 +1,6 @@
 <div class="container mt-4">
   <h2 class="text-center mb-4">Recepciones</h2>
 
-  <!-- Formulario -->
   <div class="card shadow-sm p-3 mb-4">
     <h5 class="mb-3">{{ editando ? 'Editar Recepción' : 'Nueva Recepción' }}</h5>
 
@@ -10,11 +9,9 @@
       <div class="col-md-4">
         <label>Envío</label>
 
-        <!-- Si estamos editando, mostramos un input readonly con el código -->
         <input *ngIf="editando" type="text" class="form-control" formControlName="envio_id"
           [value]="envioSeleccionado?.codigo_envio" readonly>
 
-        <!-- Si estamos creando, mostramos el select -->
         <select *ngIf="!editando" class="form-select" formControlName="envio_id" required>
           <option value="" disabled selected>Seleccione un envío</option>
           <option *ngFor="let e of envios" [value]="e.id">
@@ -55,7 +52,6 @@
     </form>
   </div>
 
-  <!-- Tabla -->
   <div class="card shadow-sm">
     <div class="card-body p-0">
       <div class="table-responsive">
@@ -119,7 +115,6 @@
         </table>
       </div>
 
-      <!-- PAGINACIÓN -->
       <div class="d-flex justify-content-center py-3">
         <nav>
           <ul class="pagination">

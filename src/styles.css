@@ -83,6 +83,20 @@ h2 {
   background-color: #9f1f1f;
 }
 
+.btn-morado:hover {
+  background-color: #5936a2;
+  border: none;
+  color: white;
+  border-radius: 8px;/* morado más oscuro al hover */
+}
+
+.btn-morado {
+  background-color: #6f42c1; /* morado Bootstrap similar */
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+
 form label {
   font-weight: bold;
   color: #3C1E4F;
