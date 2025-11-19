@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RecepcionService } from '../../services/recepcion/recepcion.service';
 import { EnvioService } from '../../services/envio/envio.service';
@@ -17,8 +22,9 @@ export class RecepcionComponent implements OnInit {
   recepciones: RecepcionData[] = [];
   recepcionesPaginadas: RecepcionData[] = [];
   cargando = false;
-
+  usuarioAutenticado!: { rol: string }; // solo necesitamos el rol
   envios: EnvioData[] = [];
+  envioSeleccionado!: EnvioData | null;
 
   paginaActual = 1;
   itemsPorPagina = 10;
@@ -36,6 +42,7 @@ export class RecepcionComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.obtenerUsuario();
     this.crearFormulario();
     this.obtenerEnvios();
     this.obtenerRecepciones();
@@ -43,38 +50,35 @@ export class RecepcionComponent implements OnInit {
 
   crearFormulario() {
     this.formRecepcion = this.fb.group({
-      envio_id: [null, Validators.required],
+      envio: [null],
       precio_kg: ['', [Validators.required, Validators.min(1)]],
-      peso_recibido_kg: ['', [Validators.required, Validators.min(1)]],
+      peso_recibido_kg: ['', [Validators.required, Validators.min(0.01)]],
     });
   }
-obtenerEnvios() {
-  this.envioService.obtenerMisEnvios().subscribe({
-    next: (resp) => {
-      this.envios = resp
-        .filter(e => e.estado === 'enviado')
-        .map(e => ({
-          ...e,
-          peso_kg: String(e.peso_kg), 
-          productor: e.productor,
-          finca: e.finca ?? null,
-          lote: e.lote ?? null
-        }));
-    },
-    error: () => {
-      this.notificacion.error('Error cargando envíos disponibles');
-    },
-  });
-}
-
-
+  private obtenerUsuario() {
+    const userData = localStorage.getItem('userData');
+    if (userData) {
+      this.usuarioAutenticado = JSON.parse(userData);
+    } else {
+      this.usuarioAutenticado = { rol: 'invitado' }; // rol por defecto si no hay user
+    }
+  }
+  obtenerEnvios() {
+    this.envioService.obtenerMisEnvios().subscribe({
+      next: (resp) =>
+        (this.envios = resp.filter((e) => e.estado === 'enviado')),
+      error: () => this.notificacion.error('Error cargando envíos'),
+    });
+  }
 
   obtenerRecepciones() {
     this.cargando = true;
     this.recepcionService.obtenerRecepciones().subscribe({
-      next: (resp: RecepcionData[]) => {
+      next: (resp) => {
         this.recepciones = resp;
-        this.totalPaginas = Math.ceil(this.recepciones.length / this.itemsPorPagina);
+        this.totalPaginas = Math.ceil(
+          this.recepciones.length / this.itemsPorPagina
+        );
         this.actualizarPaginacion();
         this.cargando = false;
       },
@@ -99,7 +103,7 @@ obtenerEnvios() {
 
   enviarFormulario() {
     if (this.formRecepcion.invalid) {
-      this.notificacion.warning('Completa todos los campos del formulario');
+      this.notificacion.warning('Completa todos los campos');
       return;
     }
 
@@ -115,20 +119,22 @@ obtenerEnvios() {
   private crearRecepcion(dto: RecepcionDTO) {
     this.recepcionService.crearRecepcion(dto).subscribe({
       next: () => {
-        this.envioService.cambiarEstadoEnvio(dto.envio_id, 'recibido').subscribe({
-          next: () => {
-            this.obtenerRecepciones();
-            this.formRecepcion.reset();
-            this.notificacion.success('Recepción registrada correctamente');
-          },
-          error: () => {
-            this.notificacion.error('Recepción creada, pero no se actualizó el envío');
-          },
-        });
+        this.envioService
+          .cambiarEstadoEnvio(dto.envio_id, 'recibido')
+          .subscribe({
+            next: () => {
+              this.obtenerRecepciones();
+              this.formRecepcion.reset();
+              this.envioSeleccionado = null;
+              this.notificacion.success('Recepción registrada');
+            },
+            error: () =>
+              this.notificacion.error(
+                'Recepción creada, pero no se actualizó el envío'
+              ),
+          });
       },
-      error: () => {
-        this.notificacion.error('Error creando la recepción');
-      },
+      error: () => this.notificacion.error('Error creando la recepción'),
     });
   }
 
@@ -137,12 +143,13 @@ obtenerEnvios() {
     this.recepcionService.actualizarRecepcion(this.idEditando, dto).subscribe({
       next: () => {
         this.obtenerRecepciones();
-        this.cancelarEdicion();
-        this.notificacion.success('Recepción actualizada correctamente');
+        this.editando = false;
+        this.idEditando = null;
+        this.envioSeleccionado = null;
+        this.formRecepcion.reset();
+        this.notificacion.success('Recepción actualizada');
       },
-      error: () => {
-        this.notificacion.error('Error actualizando la recepción');
-      },
+      error: () => this.notificacion.error('Error actualizando la recepción'),
     });
   }
 
@@ -150,8 +157,11 @@ obtenerEnvios() {
     this.editando = true;
     this.idEditando = recepcion.id;
 
+    // Guardamos el envio actual para mostrarlo
+    this.envioSeleccionado = recepcion.envio;
+
+    // Solo llenamos los campos que se pueden editar
     this.formRecepcion.patchValue({
-      envio_id: recepcion.envio_id,
       precio_kg: recepcion.precio_kg,
       peso_recibido_kg: parseFloat(recepcion.peso_recibido_kg),
     });
@@ -160,21 +170,19 @@ obtenerEnvios() {
   cancelarEdicion() {
     this.editando = false;
     this.idEditando = null;
+    this.envioSeleccionado = null;
     this.formRecepcion.reset();
     this.notificacion.warning('Edición cancelada');
   }
 
   eliminar(id: number) {
-    if (!confirm('¿Seguro que deseas eliminar esta recepción?')) return;
-
+    if (!confirm('¿Eliminar esta recepción?')) return;
     this.recepcionService.eliminarRecepcion(id).subscribe({
       next: () => {
         this.obtenerRecepciones();
-        this.notificacion.success('Recepción eliminada correctamente');
+        this.notificacion.success('Recepción eliminada');
       },
-      error: () => {
-        this.notificacion.error('Error eliminando la recepción');
-      },
+      error: () => this.notificacion.error('Error eliminando la recepción'),
     });
   }
 }

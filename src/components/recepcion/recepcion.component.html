@@ -2,51 +2,58 @@
   <h2 class="text-center mb-4">Recepciones</h2>
 
   <!-- Formulario -->
-<div class="card shadow-sm p-3 mb-4">
-  <h5 class="mb-3">{{ editando ? 'Editar Recepción' : 'Nueva Recepción' }}</h5>
+  <div class="card shadow-sm p-3 mb-4">
+    <h5 class="mb-3">{{ editando ? 'Editar Recepción' : 'Nueva Recepción' }}</h5>
 
-  <form [formGroup]="formRecepcion" (ngSubmit)="enviarFormulario()" class="row g-3">
+    <form [formGroup]="formRecepcion" (ngSubmit)="enviarFormulario()" class="row g-3">
 
-    <div class="col-md-4">
-      <label>Envío</label>
-      <select class="form-select" formControlName="envio_id">
-        <option [ngValue]="null">Seleccione...</option>
-        <option *ngFor="let e of envios" [ngValue]="e.id">
-          {{ e.codigo_envio }} - {{ e.finca.nombre }}
-        </option>
-      </select>
-      <div *ngIf="formRecepcion.get('envio_id')?.invalid && formRecepcion.get('envio_id')?.touched"
-        class="text-danger small">
-        Selecciona un envío
+      <div class="col-md-4">
+        <label>Envío</label>
+
+        <!-- Si estamos editando, mostramos un input readonly con el código -->
+        <input *ngIf="editando" type="text" class="form-control" formControlName="envio_id"
+          [value]="envioSeleccionado?.codigo_envio" readonly>
+
+        <!-- Si estamos creando, mostramos el select -->
+        <select *ngIf="!editando" class="form-select" formControlName="envio_id" required>
+          <option value="" disabled selected>Seleccione un envío</option>
+          <option *ngFor="let e of envios" [value]="e.id">
+            {{ e.codigo_envio }} - {{ e.finca_id }} - {{ e.productor.name }}
+          </option>
+        </select>
+
+        <div *ngIf="formRecepcion.get('envio_id')?.invalid && formRecepcion.get('envio_id')?.touched && !editando"
+          class="text-danger small">
+          Selecciona un envío
+        </div>
       </div>
-    </div>
 
-    <div class="col-md-4">
-      <label>Precio por kg (COP)</label>
-      <input type="number" class="form-control" formControlName="precio_kg">
-      <div *ngIf="formRecepcion.get('precio_kg')?.invalid && formRecepcion.get('precio_kg')?.touched"
-        class="text-danger small">
-        Ingresa el precio
+
+      <div class="col-md-4">
+        <label>Precio por kg (COP)</label>
+        <input type="number" class="form-control" formControlName="precio_kg">
+        <div *ngIf="formRecepcion.get('precio_kg')?.invalid && formRecepcion.get('precio_kg')?.touched"
+          class="text-danger small">
+          Ingresa el precio
+        </div>
       </div>
-    </div>
 
-    <div class="col-md-4">
-      <label>Peso recibido (Kg)</label>
-      <input type="number" class="form-control" formControlName="peso_recibido_kg">
-      <div *ngIf="formRecepcion.get('peso_recibido_kg')?.invalid && formRecepcion.get('peso_recibido_kg')?.touched"
-        class="text-danger small">
-        Ingresa la cantidad recibida
+      <div class="col-md-4">
+        <label>Peso recibido (Kg)</label>
+        <input type="number" class="form-control" formControlName="peso_recibido_kg">
+        <div *ngIf="formRecepcion.get('peso_recibido_kg')?.invalid && formRecepcion.get('peso_recibido_kg')?.touched"
+          class="text-danger small">
+          Ingresa la cantidad recibida
+        </div>
       </div>
-    </div>
 
-    <div class="col-12 text-end">
-      <button class="btn btn-success me-2">{{ editando ? 'Actualizar' : 'Guardar' }}</button>
-      <button *ngIf="editando" type="button" class="btn btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
-    </div>
+      <div class="col-12 text-end">
+        <button class="btn btn-success me-2">{{ editando ? 'Actualizar' : 'Guardar' }}</button>
+        <button *ngIf="editando" type="button" class="btn btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
+      </div>
 
-  </form>
-</div>
-
+    </form>
+  </div>
 
   <!-- Tabla -->
   <div class="card shadow-sm">
@@ -75,26 +82,36 @@
               <td>{{ r.total | currency:'COP' }}</td>
               <td>{{ r.empleado.name }}</td>
               <td>
-                <span class="badge bg-primary">{{ r.envio.estado }}</span>
+                <span class="badge" [ngClass]="{
+      'bg-primary': r.envio.estado === 'pendiente',
+      'bg-warning':r.envio.estado === 'enviado',
+      'bg-success': r.envio.estado === 'recibido',
+    }">
+                  {{ r.envio.estado | titlecase }}
+                </span>
               </td>
               <td>
-                <button class="btn btn-warning btn-sm me-2" (click)="editar(r)">
+                <button [disabled]="usuarioAutenticado.rol !== 'admin'" class="btn btn-warning btn-sm me-2"
+                  (click)="editar(r)">
                   Editar
                 </button>
-                <button class="btn btn-danger btn-sm me-2" (click)="eliminar(r.id)">
+
+                <button [disabled]="usuarioAutenticado.rol !== 'admin'" class="btn btn-danger btn-sm me-2"
+                  (click)="eliminar(r.id)">
                   Eliminar
                 </button>
               </td>
+
             </tr>
 
             <tr *ngIf="!cargando && recepciones.length === 0">
-              <td colspan="7" class="text-center text-muted py-3">
+              <td colspan="8" class="text-center text-muted py-3">
                 No hay recepciones registradas.
               </td>
             </tr>
 
             <tr *ngIf="cargando">
-              <td colspan="7" class="text-center py-3">
+              <td colspan="8" class="text-center py-3">
                 <div class="spinner-border text-primary"></div>
               </td>
             </tr>
@@ -110,9 +127,8 @@
               <button class="page-link" (click)="cambiarPagina(paginaActual - 1)">Anterior</button>
             </li>
 
-            <li class="page-item"
-                *ngFor="let p of [].constructor(totalPaginas); let i = index"
-                [class.active]="paginaActual === i + 1">
+            <li class="page-item" *ngFor="let p of [].constructor(totalPaginas); let i = index"
+              [class.active]="paginaActual === i + 1">
               <button class="page-link" (click)="cambiarPagina(i + 1)">
                 {{ i + 1 }}
               </button>

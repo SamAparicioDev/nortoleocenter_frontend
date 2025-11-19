@@ -10,6 +10,7 @@ export interface User {
   created_at: string;
   updated_at: string;
 }
+
 export interface EnvioData {
   id: number;
   productor_id: number;
@@ -18,12 +19,12 @@ export interface EnvioData {
   codigo_envio: string;
   fecha_envio: string;
   estado: string;
-  peso_kg: string;
+  peso_kg: string; // siempre string, como viene del backend
   observaciones: string;
   created_at: string;
   updated_at: string;
-  productor: User;   // 🔥 obligatorio
-  finca: FincaResponse;
+  productor: User;   // obligatorio
+  finca: FincaResponse | null;
   lote: LoteResponse | null;
 }
 
@@ -38,13 +39,9 @@ export interface Finca {
 }
 
 export interface Lote {
-  // Actualmente es null en tu JSON, pero si más adelante tiene campos puedes agregarlos
-  // Por ahora dejamos como opcional
   id?: number;
   nombre?: string;
 }
-
-
 
 export interface RecepcionData {
   id: number;
@@ -55,7 +52,7 @@ export interface RecepcionData {
   precio_kg: number;
   total: number;
   envio_id: number;
-  peso_recibido_kg: string;
+  peso_recibido_kg: string; // mantener string
   empleado: User;
   envio: EnvioData;
 }
@@ -68,5 +65,5 @@ export interface RecepcionResponse {
 export interface RecepcionDTO {
   envio_id: number;
   precio_kg: number;
-  peso_recibido_kg: number;
+  peso_recibido_kg: number; // al enviar al backend debe ser number
 }

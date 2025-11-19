@@ -7,51 +7,45 @@
 
     <form [formGroup]="formEnvio" (ngSubmit)="enviarFormulario()" class="row g-3">
 
-      <div class="col-lg-4 col-md-6 col-12">
+      <!-- Finca -->
+      <div class="col-md-4">
         <label>Finca</label>
-        <select class="form-control" formControlName="finca_id">
-          <option value="">Selecciona una finca</option>
-          <option *ngFor="let f of fincas" [value]="f.id">{{ f.nombre }}</option>
+        <input *ngIf="editando" type="text" class="form-control" [value]="formEnvio.value.finca?.nombre" readonly>
+
+        <select *ngIf="!editando" class="form-select" formControlName="finca" required>
+          <option [ngValue]="null" disabled selected>Seleccione una finca</option>
+          <option *ngFor="let f of fincas" [ngValue]="f">{{ f.nombre }} — {{ f.ciudad.nombre }}</option>
         </select>
-        <div *ngIf="formEnvio.get('finca_id')?.invalid && formEnvio.get('finca_id')?.touched" class="text-danger small">
-          Selecciona una finca
-        </div>
+
+        <div *ngIf="formEnvio.get('finca')?.invalid && formEnvio.get('finca')?.touched && !editando"
+          class="text-danger small">Selecciona una finca</div>
       </div>
 
-      <div class="col-lg-4 col-md-6 col-12">
+      <!-- Lote -->
+      <div class="col-md-4">
         <label>Lote</label>
-        <select class="form-control" formControlName="lote_id">
+        <select class="form-select" formControlName="lote_id">
           <option value="">Selecciona un lote</option>
           <option *ngFor="let l of lotes" [value]="l.id">{{ l.nombre }}</option>
         </select>
       </div>
 
-      <div class="col-lg-4 col-md-6 col-12">
+      <!-- Peso -->
+      <div class="col-md-4">
         <label>Peso (Kg)</label>
         <input type="number" class="form-control" formControlName="peso_kg">
-        <div *ngIf="formEnvio.get('peso_kg')?.invalid && formEnvio.get('peso_kg')?.touched" class="text-danger small">
-          Ingresa el peso
-        </div>
       </div>
 
-      <div class="col-md-6 col-12">
+      <!-- Observaciones -->
+      <div class="col-12">
         <label>Observaciones</label>
         <textarea class="form-control" rows="3" formControlName="observaciones"
           placeholder="Escribe observaciones..."></textarea>
-        <div *ngIf="formEnvio.get('observaciones')?.invalid && formEnvio.get('observaciones')?.touched"
-          class="text-danger small">
-          Escribe observaciones
-        </div>
       </div>
 
-      <div class="col-md-6 col-12 d-flex justify-content-end align-items-end">
-        <button type="submit" class="btn btn-success me-2" [disabled]="formEnvio.invalid">
-          {{ editando ? 'Actualizar' : 'Guardar' }}
-        </button>
-
-        <button *ngIf="editando" type="button" class="btn btn-secondary" (click)="cancelarEdicion()">
-          Cancelar
-        </button>
+      <div class="col-12 text-end">
+        <button class="btn btn-success me-2">{{ editando ? 'Actualizar' : 'Guardar' }}</button>
+        <button *ngIf="editando" type="button" class="btn btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
       </div>
     </form>
   </div>
@@ -72,35 +66,25 @@
               <th>Acciones</th>
             </tr>
           </thead>
-
           <tbody>
             <tr *ngFor="let e of enviosPaginados">
               <td>{{ e.codigo_envio }}</td>
               <td>{{ e.fecha_envio | date:'short' }}</td>
-              <td>{{ e.finca.nombre }}</td>
-              <td *ngIf="e.lote; else sinLote">{{ e.lote.nombre || e.lote_id }}</td>
-              <ng-template #sinLote>
-                <td>Sin lote registrado</td>
-              </ng-template>
+              <td>{{ e.finca?.nombre }}</td>
+              <td>{{ e.lote?.nombre || 'Sin lote' }}</td>
               <td>{{ e.peso_kg }} kg</td>
               <td>
-                <span class="badge bg-primary">{{e.estado}}</span>
+                <span class="badge" [ngClass]="{
+      'bg-primary': e.estado === 'pendiente',
+      'bg-warning': e.estado === 'enviado',
+      'bg-success': e.estado === 'recibido',
+    }">
+                  {{ e.estado | titlecase }}
+                </span>
+              </td>
               <td>
-                <button *ngIf="e.estado === 'pendiente'"  class="btn btn-warning btn-sm me-2" (click)="editar(e)">
-                  Editar
-                </button>
-                <span *ngIf="e.estado != 'pendiente'">Envio finalizado</span>
-
-                <button *ngIf="e.estado === 'pendiente'" class="btn btn-danger btn-sm" (click)="eliminar(e.id)">
-                  Eliminar
-                </button>
-
-                <button *ngIf="e.estado === 'pendiente'" class="btn btn-morado btn-sm ms-2"
-                  (click)="marcarComoEnviado(e.id)">
-                  Enviado
-                </button>
-
-
+                <button [disabled]="e.estado != 'pendiente'" class="btn btn-warning btn-sm me-2" (click)="editar(e)">Editar</button>
+                <button [disabled]="e.estado != 'pendiente'" class="btn btn-danger btn-sm" (click)="eliminar(e.id)">Eliminar</button>
               </td>
             </tr>
 
@@ -124,12 +108,10 @@
             <li class="page-item" [class.disabled]="paginaActual === 1">
               <button class="page-link" (click)="cambiarPagina(paginaActual - 1)">Anterior</button>
             </li>
-
             <li class="page-item" *ngFor="let p of [].constructor(totalPaginas); let i = index"
-              [class.active]="paginaActual === i + 1">
-              <button class="page-link" (click)="cambiarPagina(i + 1)">{{ i + 1 }}</button>
+              [class.active]="paginaActual === i+1">
+              <button class="page-link" (click)="cambiarPagina(i+1)">{{ i+1 }}</button>
             </li>
-
             <li class="page-item" [class.disabled]="paginaActual === totalPaginas">
               <button class="page-link" (click)="cambiarPagina(paginaActual + 1)">Siguiente</button>
             </li>

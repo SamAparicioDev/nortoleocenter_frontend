@@ -7,7 +7,7 @@ import { FincaService } from '../../services/finca/finca.service';
 import { FincaResponse } from '../../models/Finca';
 import { LoteService } from '../../services/lote/lote.service';
 import { LoteResponse } from '../../models/Lote';
-import { NotificacionService } from '../../services/notificacion/notificacion.service'; // <-- IMPORTANTE
+import { NotificacionService } from '../../services/notificacion/notificacion.service';
 import { EnvioData } from '../../models/Recepcion';
 
 @Component({
@@ -38,7 +38,7 @@ export class EnvioComponent implements OnInit {
     private envioService: EnvioService,
     private fincaService: FincaService,
     private loteService: LoteService,
-    private notificacion: NotificacionService // <-- INYECTAR SERVICIO
+    private notificacion: NotificacionService
   ) {}
 
   ngOnInit(): void {
@@ -49,34 +49,27 @@ export class EnvioComponent implements OnInit {
 
   crearFormulario() {
     this.formEnvio = this.fb.group({
-      finca_id: ['', Validators.required],
+      finca: [null, Validators.required],  // objeto completo
       lote_id: [''],
       peso_kg: ['', Validators.required],
       observaciones: ['', [Validators.required, Validators.maxLength(255)]],
     });
 
-    this.formEnvio.get('finca_id')?.valueChanges.subscribe((fincaId) => {
-      if (fincaId) this.obtenerLotesPorFinca(fincaId);
-      else this.lotes = [];
-      this.formEnvio.patchValue({ lote_id: '' });
+    this.formEnvio.get('finca')?.valueChanges.subscribe((finca: FincaResponse | null) => {
+      if (finca) {
+        this.obtenerLotesPorFinca(finca.id);
+        this.formEnvio.patchValue({ lote_id: '' });
+      } else {
+        this.lotes = [];
+        this.formEnvio.patchValue({ lote_id: '' });
+      }
     });
   }
 
   obtenerMisFincas() {
     this.fincaService.obtenerMisFincas().subscribe({
       next: (resp) => (this.fincas = resp),
-      error: () => {
-        this.notificacion.error('Error cargando fincas');
-      }
-    });
-  }
-
-  obtenerLotesPorFinca(fincaId: number) {
-    this.loteService.obtenerLotesPorFincaId(fincaId).subscribe({
-      next: (resp) => (this.lotes = resp),
-      error: () => {
-        this.notificacion.error('Error cargando lotes');
-      },
+      error: () => this.notificacion.error('Error cargando fincas'),
     });
   }
 
@@ -92,7 +85,7 @@ export class EnvioComponent implements OnInit {
       error: () => {
         this.cargando = false;
         this.notificacion.error('Error cargando envíos');
-      }
+      },
     });
   }
 
@@ -123,10 +116,7 @@ export class EnvioComponent implements OnInit {
           this.cancelarEdicion();
           this.notificacion.success('Envío actualizado correctamente');
         },
-        error: (err) => {
-          console.error(err);
-          this.notificacion.error('Error al actualizar el envío');
-        },
+        error: () => this.notificacion.error('Error al actualizar el envío'),
       });
     } else {
       this.envioService.guardarEnvio(dto).subscribe({
@@ -136,10 +126,7 @@ export class EnvioComponent implements OnInit {
           this.lotes = [];
           this.notificacion.success('Envío registrado correctamente');
         },
-        error: (err) => {
-          console.error(err);
-          this.notificacion.error('Error al guardar el envío');
-        },
+        error: () => this.notificacion.error('Error al guardar el envío'),
       });
     }
   }
@@ -148,11 +135,34 @@ export class EnvioComponent implements OnInit {
     this.editando = true;
     this.idEditando = envio.id;
 
-    this.formEnvio.patchValue({
-      finca_id: envio.finca_id,
-      lote_id: envio.lote_id,
-      peso_kg: envio.peso_kg,
-      observaciones: envio.observaciones,
+    // Cargar lotes de la finca antes de setear el formulario
+    if (envio.finca) {
+      this.obtenerLotesPorFinca(envio.finca.id, () => {
+        this.formEnvio.setValue({
+          finca: envio.finca,
+          lote_id: envio.lote_id || '',
+          peso_kg: envio.peso_kg,
+          observaciones: envio.observaciones,
+        });
+      });
+    } else {
+      this.lotes = [];
+      this.formEnvio.setValue({
+        finca: null,
+        lote_id: '',
+        peso_kg: envio.peso_kg,
+        observaciones: envio.observaciones,
+      });
+    }
+  }
+
+  obtenerLotesPorFinca(fincaId: number, callback?: () => void) {
+    this.loteService.obtenerLotesPorFincaId(fincaId).subscribe({
+      next: (resp) => {
+        this.lotes = resp;
+        if (callback) callback();
+      },
+      error: () => this.notificacion.error('Error cargando lotes'),
     });
   }
 
@@ -172,23 +182,7 @@ export class EnvioComponent implements OnInit {
         this.obtenerEnvios();
         this.notificacion.success('Envío eliminado correctamente');
       },
-      error: () => {
-        this.notificacion.error('Error al eliminar el envío');
-      }
-    });
-  }
-
-  marcarComoEnviado(envioId: number) {
-    if (!confirm('¿Deseas marcar este envío como enviado?')) return;
-
-    this.envioService.cambiarEstadoEnvio(envioId, 'enviado').subscribe({
-      next: () => {
-        this.obtenerEnvios();
-        this.notificacion.success('Envío marcado como enviado');
-      },
-      error: () => {
-        this.notificacion.error('Error al cambiar el estado');
-      }
+      error: () => this.notificacion.error('Error al eliminar el envío'),
     });
   }
 }
