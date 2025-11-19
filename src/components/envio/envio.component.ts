@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule, NgIf } from '@angular/common';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { EnvioService } from '../../services/envio/envio.service';
 import { EnvioDTO } from '../../models/Envio';
 import { FincaService } from '../../services/finca/finca.service';
@@ -13,7 +18,7 @@ import { EnvioData } from '../../models/Recepcion';
 @Component({
   selector: 'app-envio',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgIf],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './envio.component.html',
   styleUrls: ['./envio.component.css'],
 })
@@ -49,16 +54,15 @@ export class EnvioComponent implements OnInit {
 
   crearFormulario() {
     this.formEnvio = this.fb.group({
-      finca: [null, Validators.required],  // objeto completo
+      finca_id: ['', Validators.required],
       lote_id: [''],
       peso_kg: ['', Validators.required],
       observaciones: ['', [Validators.required, Validators.maxLength(255)]],
     });
 
-    this.formEnvio.get('finca')?.valueChanges.subscribe((finca: FincaResponse | null) => {
-      if (finca) {
-        this.obtenerLotesPorFinca(finca.id);
-        this.formEnvio.patchValue({ lote_id: '' });
+    this.formEnvio.get('finca_id')?.valueChanges.subscribe((fincaId) => {
+      if (fincaId) {
+        this.obtenerLotesPorFinca(fincaId);
       } else {
         this.lotes = [];
         this.formEnvio.patchValue({ lote_id: '' });
@@ -73,21 +77,45 @@ export class EnvioComponent implements OnInit {
     });
   }
 
-  obtenerEnvios() {
-    this.cargando = true;
-    this.envioService.obtenerEnvios().subscribe({
-      next: (resp: EnvioData[]) => {
-        this.envios = resp;
-        this.totalPaginas = Math.ceil(this.envios.length / this.itemsPorPagina);
-        this.actualizarPaginacion();
-        this.cargando = false;
-      },
-      error: () => {
-        this.cargando = false;
-        this.notificacion.error('Error cargando envíos');
-      },
-    });
-  }
+obtenerEnvios() {
+  this.cargando = true;
+
+  this.envioService.obtenerEnvios().subscribe({
+    next: (resp: EnvioData[]) => {
+
+      // Orden de estados personalizado
+      const ordenEstados: any = {
+        pendiente: 1,
+        enviado: 2,
+        recibido: 3,
+      };
+
+      this.envios = resp.sort((a, b) => {
+        // Primero ordenar según el estado
+        const ordenEstadoA = ordenEstados[a.estado] ?? 99;
+        const ordenEstadoB = ordenEstados[b.estado] ?? 99;
+
+        if (ordenEstadoA !== ordenEstadoB) {
+          return ordenEstadoA - ordenEstadoB;
+        }
+
+        // Si tienen el mismo estado, ordenar por fecha descendente
+        return new Date(b.fecha_envio).getTime() - new Date(a.fecha_envio).getTime();
+      });
+
+      this.totalPaginas = Math.ceil(this.envios.length / this.itemsPorPagina);
+      this.actualizarPaginacion();
+      this.cargando = false;
+    },
+
+    error: () => {
+      this.cargando = false;
+      this.notificacion.error('Error cargando envíos');
+    },
+  });
+}
+
+
 
   actualizarPaginacion() {
     const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
@@ -113,7 +141,9 @@ export class EnvioComponent implements OnInit {
       this.envioService.actualizarEnvioPorId(this.idEditando, dto).subscribe({
         next: () => {
           this.obtenerEnvios();
-          this.cancelarEdicion();
+          this.editando = false;
+          this.idEditando = null;
+          this.formEnvio.reset();
           this.notificacion.success('Envío actualizado correctamente');
         },
         error: () => this.notificacion.error('Error al actualizar el envío'),
@@ -135,33 +165,19 @@ export class EnvioComponent implements OnInit {
     this.editando = true;
     this.idEditando = envio.id;
 
-    // Cargar lotes de la finca antes de setear el formulario
-    if (envio.finca) {
-      this.obtenerLotesPorFinca(envio.finca.id, () => {
-        this.formEnvio.setValue({
-          finca: envio.finca,
-          lote_id: envio.lote_id || '',
-          peso_kg: envio.peso_kg,
-          observaciones: envio.observaciones,
-        });
-      });
-    } else {
-      this.lotes = [];
-      this.formEnvio.setValue({
-        finca: null,
-        lote_id: '',
-        peso_kg: envio.peso_kg,
-        observaciones: envio.observaciones,
-      });
-    }
+    this.formEnvio.patchValue({
+      finca_id: envio.finca_id,
+      lote_id: envio.lote_id,
+      peso_kg: envio.peso_kg,
+      observaciones: envio.observaciones,
+    });
+
+    this.obtenerLotesPorFinca(envio.finca_id);
   }
 
-  obtenerLotesPorFinca(fincaId: number, callback?: () => void) {
+  obtenerLotesPorFinca(fincaId: number) {
     this.loteService.obtenerLotesPorFincaId(fincaId).subscribe({
-      next: (resp) => {
-        this.lotes = resp;
-        if (callback) callback();
-      },
+      next: (resp) => (this.lotes = resp),
       error: () => this.notificacion.error('Error cargando lotes'),
     });
   }
@@ -170,7 +186,6 @@ export class EnvioComponent implements OnInit {
     this.editando = false;
     this.idEditando = null;
     this.formEnvio.reset();
-    this.lotes = [];
     this.notificacion.warning('Edición cancelada');
   }
 
@@ -183,6 +198,20 @@ export class EnvioComponent implements OnInit {
         this.notificacion.success('Envío eliminado correctamente');
       },
       error: () => this.notificacion.error('Error al eliminar el envío'),
+    });
+  }
+
+  cambiarEstado(id: number) {
+    // Cambia el estado solo si es pendiente
+    const envio = this.envios.find((e) => e.id === id);
+    if (!envio || envio.estado !== 'pendiente') return;
+
+    this.envioService.cambiarEstadoEnvio(id, 'enviado').subscribe({
+      next: () => {
+        this.notificacion.success('Envío marcado como enviado');
+        this.obtenerEnvios();
+      },
+      error: () => this.notificacion.error('Error al cambiar el estado'),
     });
   }
 }

@@ -7,21 +7,16 @@
 
     <form [formGroup]="formEnvio" (ngSubmit)="enviarFormulario()" class="row g-3">
 
-      <!-- Finca -->
       <div class="col-md-4">
         <label>Finca</label>
-        <input *ngIf="editando" type="text" class="form-control" [value]="formEnvio.value.finca?.nombre" readonly>
-
-        <select *ngIf="!editando" class="form-select" formControlName="finca" required>
-          <option [ngValue]="null" disabled selected>Seleccione una finca</option>
-          <option *ngFor="let f of fincas" [ngValue]="f">{{ f.nombre }} — {{ f.ciudad.nombre }}</option>
+        <select class="form-select" formControlName="finca_id">
+          <option value="">Selecciona una finca</option>
+          <option *ngFor="let f of fincas" [value]="f.id">
+            {{ f.nombre }} — {{ f.ciudad.nombre }}
+          </option>
         </select>
-
-        <div *ngIf="formEnvio.get('finca')?.invalid && formEnvio.get('finca')?.touched && !editando"
-          class="text-danger small">Selecciona una finca</div>
       </div>
 
-      <!-- Lote -->
       <div class="col-md-4">
         <label>Lote</label>
         <select class="form-select" formControlName="lote_id">
@@ -30,23 +25,21 @@
         </select>
       </div>
 
-      <!-- Peso -->
       <div class="col-md-4">
         <label>Peso (Kg)</label>
         <input type="number" class="form-control" formControlName="peso_kg">
       </div>
 
-      <!-- Observaciones -->
       <div class="col-12">
         <label>Observaciones</label>
-        <textarea class="form-control" rows="3" formControlName="observaciones"
-          placeholder="Escribe observaciones..."></textarea>
+        <textarea class="form-control" rows="3" formControlName="observaciones" placeholder="Escribe observaciones..."></textarea>
       </div>
 
       <div class="col-12 text-end">
         <button class="btn btn-success me-2">{{ editando ? 'Actualizar' : 'Guardar' }}</button>
         <button *ngIf="editando" type="button" class="btn btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
       </div>
+
     </form>
   </div>
 
@@ -69,29 +62,29 @@
           <tbody>
             <tr *ngFor="let e of enviosPaginados">
               <td>{{ e.codigo_envio }}</td>
-              <td>{{ e.fecha_envio | date:'short' }}</td>
+              <td>{{ e.fecha_envio |  date: 'yyyy-MM-dd' }}</td>
               <td>{{ e.finca?.nombre }}</td>
               <td>{{ e.lote?.nombre || 'Sin lote' }}</td>
               <td>{{ e.peso_kg }} kg</td>
               <td>
                 <span class="badge" [ngClass]="{
-      'bg-primary': e.estado === 'pendiente',
-      'bg-warning': e.estado === 'enviado',
-      'bg-success': e.estado === 'recibido',
-    }">
+                  'bg-primary': e.estado === 'pendiente',
+                  'bg-warning': e.estado === 'enviado',
+                  'bg-success': e.estado === 'recibido'
+                }">
                   {{ e.estado | titlecase }}
                 </span>
               </td>
               <td>
-                <button [disabled]="e.estado != 'pendiente'" class="btn btn-warning btn-sm me-2" (click)="editar(e)">Editar</button>
-                <button [disabled]="e.estado != 'pendiente'" class="btn btn-danger btn-sm" (click)="eliminar(e.id)">Eliminar</button>
+                <button class="btn btn-warning btn-sm me-2" [disabled]="e.estado !== 'pendiente'" (click)="editar(e)">Editar</button>
+                <button class="btn btn-danger btn-sm me-2" [disabled]="e.estado !== 'pendiente'" (click)="eliminar(e.id)">Eliminar</button>
+                <button class="btn btn-secondary btn-sm" [disabled]="e.estado !== 'pendiente'" (click)="cambiarEstado(e.id)">Enviar</button>
               </td>
             </tr>
 
             <tr *ngIf="!cargando && envios.length === 0">
               <td colspan="7" class="text-center text-muted py-3">No hay envíos registrados.</td>
             </tr>
-
             <tr *ngIf="cargando">
               <td colspan="7" class="text-center py-3">
                 <div class="spinner-border text-primary"></div>
@@ -108,8 +101,7 @@
             <li class="page-item" [class.disabled]="paginaActual === 1">
               <button class="page-link" (click)="cambiarPagina(paginaActual - 1)">Anterior</button>
             </li>
-            <li class="page-item" *ngFor="let p of [].constructor(totalPaginas); let i = index"
-              [class.active]="paginaActual === i+1">
+            <li class="page-item" *ngFor="let p of [].constructor(totalPaginas); let i = index" [class.active]="paginaActual === i+1">
               <button class="page-link" (click)="cambiarPagina(i+1)">{{ i+1 }}</button>
             </li>
             <li class="page-item" [class.disabled]="paginaActual === totalPaginas">
