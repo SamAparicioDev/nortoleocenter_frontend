@@ -9,7 +9,7 @@
       <div class="col-md-4">
         <label>Envio</label>
         <select class="form-select" formControlName="envio_id" >
-          <option value="">Seleccione...</option>
+          <option value="" *ngIf="!editando" disabled>Seleccione...</option>
           <option *ngFor="let e of envios" [value]="e.id">
             {{ e.codigo_envio }} - {{ e.finca?.nombre}}
           </option>
@@ -63,6 +63,7 @@
               <th>Total</th>
               <th>Empleado</th>
               <th>Estado Envío</th>
+              <th>Peso perdido (kg)</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -76,6 +77,9 @@
               <td>{{ r.empleado.name }}</td>
               <td>
                 <span class="badge bg-primary">{{ r.envio.estado }}</span>
+              </td>
+              <td>
+                <span class="badge bg-danger">{{r.total_kg_perdidos}}</span>
               </td>
               <td>
                 <button class="btn btn-warning btn-sm me-2" (click)="editar(r)">

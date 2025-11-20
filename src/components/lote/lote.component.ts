@@ -23,7 +23,7 @@ export class LoteComponent implements OnInit {
   fincas: FincaResponse[] = [];
 
   paginaActual = 1;
-  itemsPorPagina = 10;
+  itemsPorPagina = 5;
   totalPaginas = 0;
 
   formLote!: FormGroup;

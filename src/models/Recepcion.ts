@@ -52,7 +52,8 @@ export interface RecepcionData {
   precio_kg: number;
   total: number;
   envio_id: number;
-  peso_recibido_kg: string; 
+  peso_recibido_kg: string;
+  total_kg_perdidos: string;
   empleado: User;
   envio: EnvioData;
 }

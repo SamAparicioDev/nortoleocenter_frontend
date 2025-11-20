@@ -26,7 +26,7 @@ export class RecepcionComponent implements OnInit {
   envios: EnvioData[] = [];
 
   paginaActual = 1;
-  itemsPorPagina = 10;
+  itemsPorPagina = 5;
   totalPaginas = 0;
 
   formRecepcion!: FormGroup;
@@ -77,28 +77,26 @@ export class RecepcionComponent implements OnInit {
     this.actualizarPaginacion();
   }
 
-obtenerRecepciones(): void {
-  this.cargando = true;
+  obtenerRecepciones(): void {
+    this.cargando = true;
 
-  this.recepcionService.obtenerRecepciones().subscribe({
-    next: (resp: RecepcionData[]) => {
+    this.recepcionService.obtenerRecepciones().subscribe({
+      next: (resp: RecepcionData[]) => {
+        this.recepciones = resp.sort((a, b) => b.id - a.id);
 
-      this.recepciones = resp.sort((a, b) => b.id - a.id);
+        this.totalPaginas = Math.ceil(
+          this.recepciones.length / this.itemsPorPagina
+        );
+        this.actualizarPaginacion();
+        this.cargando = false;
+      },
 
-      this.totalPaginas = Math.ceil(
-        this.recepciones.length / this.itemsPorPagina
-      );
-      this.actualizarPaginacion();
-      this.cargando = false;
-    },
-
-    error: () => {
-      this.notificacion.error('Error cargando recepciones');
-      this.cargando = false;
-    },
-  });
-}
-
+      error: () => {
+        this.notificacion.error('Error cargando recepciones');
+        this.cargando = false;
+      },
+    });
+  }
 
   enviarFormulario() {
     if (this.formRecepcion.invalid) {
