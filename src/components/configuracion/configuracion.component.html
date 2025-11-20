@@ -9,20 +9,15 @@
       <a class="nav-link" [class.active]="activeTab==='usuarios'" (click)="cambiarTab('usuarios')">Usuarios</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" [class.active]="activeTab==='departamentos'" (click)="cambiarTab('departamentos')">Departamentos</a>
+      <a class="nav-link" [class.active]="activeTab==='departamentos'"
+        (click)="cambiarTab('departamentos')">Departamentos</a>
     </li>
     <li class="nav-item">
       <a class="nav-link" [class.active]="activeTab==='ciudades'" (click)="cambiarTab('ciudades')">Ciudades</a>
     </li>
   </ul>
-
-
-  <!-- ======================
-       USUARIOS
-  ====================== -->
   <div *ngIf="activeTab==='usuarios'">
 
-    <!-- FORMULARIO -->
     <div class="card shadow-sm p-3 mb-4">
       <h5>{{ editandoUsuario ? 'Editar Usuario' : 'Nuevo Usuario' }}</h5>
 
@@ -57,13 +52,12 @@
 
         <div class="col-12 d-flex justify-content-end mt-3">
           <button type="submit" class="btn btn-purple me-2">{{ editandoUsuario ? 'Actualizar' : 'Guardar' }}</button>
-          <button *ngIf="editandoUsuario" type="button" class="btn btn-secondary" (click)="cancelarEdicionUsuario()">Cancelar</button>
+          <button *ngIf="editandoUsuario" type="button" class="btn btn-secondary"
+            (click)="cancelarEdicionUsuario()">Cancelar</button>
         </div>
 
       </form>
     </div>
-
-    <!-- TABLA -->
     <div class="card shadow-sm">
       <div class="card-body p-0">
 
@@ -87,8 +81,10 @@
                 <td>{{ u.rol }}</td>
                 <td>{{ u.created_at | date:'short' }}</td>
                 <td>
-                  <button [disabled]="u.rol == 'admin'" class="btn btn-warning btn-sm me-2" (click)="editarUsuario(u)">Editar</button>
-                  <button [disabled]="u.rol == 'admin'" class="btn btn-danger btn-sm" (click)="eliminarUsuario(u.id)">Eliminar</button>
+                  <button [disabled]="u.rol == 'admin'" class="btn btn-warning btn-sm me-2"
+                    (click)="editarUsuario(u)">Editar</button>
+                  <button [disabled]="u.rol == 'admin'" class="btn btn-danger btn-sm"
+                    (click)="eliminarUsuario(u.id)">Eliminar</button>
                 </td>
               </tr>
 
@@ -101,8 +97,6 @@
             </tbody>
           </table>
         </div>
-
-        <!-- PAGINACIÓN -->
         <div class="d-flex justify-content-center py-3">
           <nav>
             <ul class="pagination">
@@ -111,9 +105,8 @@
                 <button class="page-link" (click)="cambiarPagina('usuarios', paginaUsuarios - 1)">Anterior</button>
               </li>
 
-              <li class="page-item"
-                  *ngFor="let p of [].constructor(totalPagUsuarios); let i=index"
-                  [class.active]="paginaUsuarios === i + 1">
+              <li class="page-item" *ngFor="let p of [].constructor(totalPagUsuarios); let i=index"
+                [class.active]="paginaUsuarios === i + 1">
                 <button class="page-link" (click)="cambiarPagina('usuarios', i + 1)">
                   {{ i + 1 }}
                 </button>
@@ -130,15 +123,7 @@
       </div>
     </div>
   </div>
-
-
-
-  <!-- ======================
-       DEPARTAMENTOS
-  ====================== -->
   <div *ngIf="activeTab==='departamentos'">
-
-    <!-- FORMULARIO -->
     <div class="card shadow-sm p-3 mb-4">
       <h5>{{ editandoDepartamento ? 'Editar Departamento' : 'Nuevo Departamento' }}</h5>
 
@@ -149,13 +134,13 @@
         </div>
 
         <div class="col-12 d-flex justify-content-end mt-3">
-          <button type="submit" class="btn btn-purple me-2">{{ editandoDepartamento ? 'Actualizar' : 'Guardar' }}</button>
-          <button *ngIf="editandoDepartamento" type="button" class="btn btn-secondary" (click)="cancelarEdicionDepartamento()">Cancelar</button>
+          <button type="submit" class="btn btn-purple me-2">{{ editandoDepartamento ? 'Actualizar' : 'Guardar'
+            }}</button>
+          <button *ngIf="editandoDepartamento" type="button" class="btn btn-secondary"
+            (click)="cancelarEdicionDepartamento()">Cancelar</button>
         </div>
       </form>
     </div>
-
-    <!-- TABLA -->
     <div class="card shadow-sm">
       <div class="card-body p-0">
 
@@ -188,26 +173,25 @@
           </table>
         </div>
 
-
-        <!-- PAGINACIÓN -->
         <div class="d-flex justify-content-center py-3">
           <nav>
             <ul class="pagination">
 
               <li class="page-item" [class.disabled]="paginaDepartamentos === 1">
-                <button class="page-link" (click)="cambiarPagina('departamentos', paginaDepartamentos - 1)">Anterior</button>
+                <button class="page-link"
+                  (click)="cambiarPagina('departamentos', paginaDepartamentos - 1)">Anterior</button>
               </li>
 
-              <li class="page-item"
-                  *ngFor="let p of [].constructor(totalPagDepartamentos); let i=index"
-                  [class.active]="paginaDepartamentos === i + 1">
+              <li class="page-item" *ngFor="let p of [].constructor(totalPagDepartamentos); let i=index"
+                [class.active]="paginaDepartamentos === i + 1">
                 <button class="page-link" (click)="cambiarPagina('departamentos', i + 1)">
                   {{ i + 1 }}
                 </button>
               </li>
 
               <li class="page-item" [class.disabled]="paginaDepartamentos === totalPagDepartamentos">
-                <button class="page-link" (click)="cambiarPagina('departamentos', paginaDepartamentos + 1)">Siguiente</button>
+                <button class="page-link"
+                  (click)="cambiarPagina('departamentos', paginaDepartamentos + 1)">Siguiente</button>
               </li>
 
             </ul>
@@ -218,14 +202,8 @@
     </div>
   </div>
 
-
-
-  <!-- ======================
-       CIUDADES
-  ====================== -->
   <div *ngIf="activeTab==='ciudades'">
 
-    <!-- FORMULARIO -->
     <div class="card shadow-sm p-3 mb-4">
       <h5>{{ editandoCiudad ? 'Editar Ciudad' : 'Nueva Ciudad' }}</h5>
 
@@ -246,13 +224,13 @@
 
         <div class="col-12 d-flex justify-content-end mt-3">
           <button type="submit" class="btn btn-purple me-2">{{ editandoCiudad ? 'Actualizar' : 'Guardar' }}</button>
-          <button *ngIf="editandoCiudad" type="button" class="btn btn-secondary" (click)="cancelarEdicionCiudad()">Cancelar</button>
+          <button *ngIf="editandoCiudad" type="button" class="btn btn-secondary"
+            (click)="cancelarEdicionCiudad()">Cancelar</button>
         </div>
 
       </form>
     </div>
 
-    <!-- TABLA -->
     <div class="card shadow-sm">
       <div class="card-body p-0">
 
@@ -287,8 +265,6 @@
           </table>
         </div>
 
-
-        <!-- PAGINACIÓN -->
         <div class="d-flex justify-content-center py-3">
           <nav>
             <ul class="pagination">
@@ -297,9 +273,8 @@
                 <button class="page-link" (click)="cambiarPagina('ciudades', paginaCiudades - 1)">Anterior</button>
               </li>
 
-              <li class="page-item"
-                  *ngFor="let p of [].constructor(totalPagCiudades); let i=index"
-                  [class.active]="paginaCiudades === i + 1">
+              <li class="page-item" *ngFor="let p of [].constructor(totalPagCiudades); let i=index"
+                [class.active]="paginaCiudades === i + 1">
                 <button class="page-link" (click)="cambiarPagina('ciudades', i + 1)">
                   {{ i + 1 }}
                 </button>

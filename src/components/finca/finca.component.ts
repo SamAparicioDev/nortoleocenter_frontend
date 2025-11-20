@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FincaService } from '../../services/finca/finca.service';
 import { FincaDTO, FincaResponse } from '../../models/Finca';
@@ -32,7 +37,7 @@ export class FincaComponent implements OnInit {
     private fb: FormBuilder,
     private fincaService: FincaService,
     private ciudadService: CiudadService,
-    private notificacion: NotificacionService // <-- SERVICIO
+    private notificacion: NotificacionService
   ) {}
 
   ngOnInit(): void {
@@ -102,7 +107,6 @@ export class FincaComponent implements OnInit {
     const dto: FincaDTO = this.formFinca.value;
 
     if (this.editando && this.idEditando !== null) {
-      // 🔥 ACTUALIZAR FINCA
       this.fincaService.actualizarFincaPorId(this.idEditando, dto).subscribe({
         next: () => {
           this.obtenerFincas();
@@ -114,7 +118,6 @@ export class FincaComponent implements OnInit {
         },
       });
     } else {
-      // 🔥 CREAR FINCA
       this.fincaService.crearFinca(dto).subscribe({
         next: () => {
           this.obtenerFincas();

@@ -77,45 +77,45 @@ export class EnvioComponent implements OnInit {
     });
   }
 
-obtenerEnvios() {
-  this.cargando = true;
+  obtenerEnvios() {
+    this.cargando = true;
 
-  this.envioService.obtenerEnvios().subscribe({
-    next: (resp: EnvioData[]) => {
+    this.envioService.obtenerEnvios().subscribe({
+      next: (resp: EnvioData[]) => {
+        // Orden de estados personalizado
+        const ordenEstados: any = {
+          pendiente: 1,
+          enviado: 2,
+          recibido: 3,
+        };
 
-      // Orden de estados personalizado
-      const ordenEstados: any = {
-        pendiente: 1,
-        enviado: 2,
-        recibido: 3,
-      };
+        this.envios = resp.sort((a, b) => {
+          // Primero ordenar según el estado
+          const ordenEstadoA = ordenEstados[a.estado] ?? 99;
+          const ordenEstadoB = ordenEstados[b.estado] ?? 99;
 
-      this.envios = resp.sort((a, b) => {
-        // Primero ordenar según el estado
-        const ordenEstadoA = ordenEstados[a.estado] ?? 99;
-        const ordenEstadoB = ordenEstados[b.estado] ?? 99;
+          if (ordenEstadoA !== ordenEstadoB) {
+            return ordenEstadoA - ordenEstadoB;
+          }
 
-        if (ordenEstadoA !== ordenEstadoB) {
-          return ordenEstadoA - ordenEstadoB;
-        }
+          // Si tienen el mismo estado, ordenar por fecha descendente
+          return (
+            new Date(b.fecha_envio).getTime() -
+            new Date(a.fecha_envio).getTime()
+          );
+        });
 
-        // Si tienen el mismo estado, ordenar por fecha descendente
-        return new Date(b.fecha_envio).getTime() - new Date(a.fecha_envio).getTime();
-      });
+        this.totalPaginas = Math.ceil(this.envios.length / this.itemsPorPagina);
+        this.actualizarPaginacion();
+        this.cargando = false;
+      },
 
-      this.totalPaginas = Math.ceil(this.envios.length / this.itemsPorPagina);
-      this.actualizarPaginacion();
-      this.cargando = false;
-    },
-
-    error: () => {
-      this.cargando = false;
-      this.notificacion.error('Error cargando envíos');
-    },
-  });
-}
-
-
+      error: () => {
+        this.cargando = false;
+        this.notificacion.error('Error cargando envíos');
+      },
+    });
+  }
 
   actualizarPaginacion() {
     const inicio = (this.paginaActual - 1) * this.itemsPorPagina;

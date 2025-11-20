@@ -3,38 +3,35 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #d109ef, #6610f2);
-  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #2d172d, #7b55c1);
+  font-family: "Poppins", sans-serif;
   padding: 2rem 1rem;
   box-sizing: border-box;
 }
 
-/* Tarjeta principal */
 .auth-card {
-  width: 460px; /* ancho general */
+  width: 460px;
   perspective: 1000px;
   position: relative;
 }
 
-/* Contenedor interno con efecto flip */
 .auth-inner {
   width: 100%;
   position: relative;
   transform-style: preserve-3d;
   transition: transform 0.8s ease-in-out;
-  height: 650px; /* altura máxima (registro) */
+  height: 650px;
 }
 
 #toggle:checked ~ .auth-inner {
   transform: rotateY(180deg);
 }
 
-/* Caras del formulario */
 .form-face {
   position: absolute;
   width: 100%;
   backface-visibility: hidden;
-  background: #fff;
+  background: #ffffff;
   border-radius: 1rem;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
   display: flex;
@@ -43,28 +40,24 @@
   padding: 2rem;
 }
 
-/* Scroll interno para contenido largo (registro) */
 .form-content {
   width: 100%;
   overflow-y: auto;
   padding-right: 5px;
 }
 
-/* Login más corto */
 .form-face.front .form-content {
-  height: 350px; /* suficiente para 2 inputs */
+  height: 350px;
 }
 
-/* Registro completo */
 .form-face.back .form-content {
-  height: 600px; /* suficiente para todos los inputs con scroll */
+  height: 600px;
 }
 
 .form-face.back {
   transform: rotateY(180deg);
 }
 
-/* Encabezado con logo y título */
 .form-header {
   display: flex;
   align-items: center;
@@ -90,7 +83,6 @@
   transform: scale(1.1);
 }
 
-/* Inputs y botones */
 input.form-control {
   border-radius: 8px;
 }
@@ -100,23 +92,21 @@ button {
   font-weight: 500;
 }
 
-/* Etiqueta para alternar */
 .toggle-label {
   display: block;
   text-align: center;
   margin-top: 1rem;
-  color: #0d6efd;
+  color: #810dfd;
   cursor: pointer;
   font-size: 0.9rem;
   transition: color 0.3s;
 }
 
 .toggle-label:hover {
-  color: #0056b3;
+  color: #d400ff;
   text-decoration: underline;
 }
 
-/* Responsivo */
 @media (max-width: 480px) {
   .auth-card {
     width: 95%;

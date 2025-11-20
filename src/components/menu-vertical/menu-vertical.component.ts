@@ -9,14 +9,12 @@ import { UserById } from '../../models/User';
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './menu-vertical.component.html',
-  styleUrls: ['./menu-vertical.component.css']
+  styleUrls: ['./menu-vertical.component.css'],
 })
 export class MenuVerticalComponent implements OnInit {
-
   isCollapsed = false;
   isMobileMenuOpen = false;
 
-  // Para almacenar el usuario logueado
   userDataUser!: UserById | null;
 
   constructor(private autenticacionService: AutenticationService) {}
@@ -26,7 +24,6 @@ export class MenuVerticalComponent implements OnInit {
     this.checkScreenSize();
   }
 
-  /** Cargar el usuario del localStorage */
   loadUser() {
     const stored = localStorage.getItem('userData');
 
@@ -69,7 +66,6 @@ export class MenuVerticalComponent implements OnInit {
     }
   }
 
-  /** Comprobaciones de roles */
   isAdmin(): boolean {
     return this.userDataUser?.rol === 'admin';
   }
@@ -82,7 +78,6 @@ export class MenuVerticalComponent implements OnInit {
     return this.userDataUser?.rol === 'empleado';
   }
 
-  /** Cerrar sesión */
   cerrarSesion() {
     this.autenticacionService.logout();
     sessionStorage.removeItem('token');

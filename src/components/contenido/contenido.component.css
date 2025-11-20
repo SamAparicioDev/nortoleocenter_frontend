@@ -23,7 +23,6 @@ app-menu-vertical {
   }
 }
 
-/* Ancho colapsado del sidebar */
 .offset-custom {
   margin-left: 70px;
   transition: margin-left 0.3s ease;

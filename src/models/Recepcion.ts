@@ -19,11 +19,11 @@ export interface EnvioData {
   codigo_envio: string;
   fecha_envio: string;
   estado: string;
-  peso_kg: string; // siempre string, como viene del backend
+  peso_kg: string;
   observaciones: string;
   created_at: string;
   updated_at: string;
-  productor: User;   // obligatorio
+  productor: User;
   finca: FincaResponse | null;
   lote: LoteResponse | null;
 }
@@ -52,7 +52,7 @@ export interface RecepcionData {
   precio_kg: number;
   total: number;
   envio_id: number;
-  peso_recibido_kg: string; // mantener string
+  peso_recibido_kg: string; 
   empleado: User;
   envio: EnvioData;
 }
@@ -65,5 +65,5 @@ export interface RecepcionResponse {
 export interface RecepcionDTO {
   envio_id: number;
   precio_kg: number;
-  peso_recibido_kg: number; // al enviar al backend debe ser number
+  peso_recibido_kg: number;
 }

@@ -12,7 +12,7 @@ export interface LoteDTO {
   nombre: string;
   area_m2: number;
 }
-// 1. Nivel más profundo: Departamento
+
 export interface Departamento {
     id: number;
     created_at: string;
@@ -20,7 +20,6 @@ export interface Departamento {
     nombre: string;
 }
 
-// 2. Nivel siguiente: Ciudad
 export interface Ciudad {
     id: number;
     created_at: string;
@@ -30,7 +29,6 @@ export interface Ciudad {
     departamento: Departamento;
 }
 
-// 3. Nivel siguiente: Finca
 export interface Finca {
     id: number;
     created_at: string;
@@ -42,7 +40,6 @@ export interface Finca {
     ciudad: Ciudad;
 }
 
-// 4. Nivel superior: Lote (El objeto principal del array)
 export interface Lote {
     id: number;
     created_at: string;
@@ -53,4 +50,3 @@ export interface Lote {
     finca: Finca;
 }
 
-// Tipo para el array completo

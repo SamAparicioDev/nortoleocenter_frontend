@@ -83,7 +83,6 @@ obtenerRecepciones(): void {
   this.recepcionService.obtenerRecepciones().subscribe({
     next: (resp: RecepcionData[]) => {
 
-      // Ordenar por ID de mayor a menor
       this.recepciones = resp.sort((a, b) => b.id - a.id);
 
       this.totalPaginas = Math.ceil(

@@ -12,7 +12,10 @@ import { DepartamentoService } from '../../services/departamento/departamento.se
 import { CiudadService } from '../../services/ciudad/ciudad.service';
 
 import { UserList } from '../../models/User';
-import { DepartamentoDTO, DepartamentoListResponse } from '../../models/Departamento';
+import {
+  DepartamentoDTO,
+  DepartamentoListResponse,
+} from '../../models/Departamento';
 import { CiudadDTO, CiudadResponseList } from '../../models/Ciudad';
 import { NotificacionService } from '../../services/notificacion/notificacion.service';
 
@@ -24,16 +27,11 @@ import { NotificacionService } from '../../services/notificacion/notificacion.se
   styleUrls: ['./configuracion.component.css'],
 })
 export class ConfiguracionComponent implements OnInit {
-
-  // ==========================================
-  // PESTAÑAS
-  // ==========================================
   activeTab: 'usuarios' | 'departamentos' | 'ciudades' = 'usuarios';
-  cambiarTab(tab: any) { this.activeTab = tab; }
+  cambiarTab(tab: any) {
+    this.activeTab = tab;
+  }
 
-  // ==========================================
-  // USUARIOS
-  // ==========================================
   usuarios: UserList[] = [];
   usuariosPaginados: UserList[] = [];
   paginaUsuarios = 1;
@@ -44,9 +42,6 @@ export class ConfiguracionComponent implements OnInit {
   editandoUsuario = false;
   idEditandoUsuario: number | null = null;
 
-  // ==========================================
-  // DEPARTAMENTOS
-  // ==========================================
   departamentos: DepartamentoListResponse[] = [];
   departamentosPaginados: DepartamentoListResponse[] = [];
   paginaDepartamentos = 1;
@@ -57,9 +52,6 @@ export class ConfiguracionComponent implements OnInit {
   editandoDepartamento = false;
   idEditandoDepartamento: number | null = null;
 
-  // ==========================================
-  // CIUDADES
-  // ==========================================
   ciudades: CiudadResponseList[] = [];
   ciudadesPaginadas: CiudadResponseList[] = [];
   paginaCiudades = 1;
@@ -91,9 +83,6 @@ export class ConfiguracionComponent implements OnInit {
     this.obtenerCiudades();
   }
 
-  // ==========================================
-  // FORMULARIOS
-  // ==========================================
   crearFormularios() {
     this.formUsuario = this.fb.group({
       name: ['', Validators.required],
@@ -113,9 +102,6 @@ export class ConfiguracionComponent implements OnInit {
     });
   }
 
-  // ==========================================
-  // USUARIOS
-  // ==========================================
   obtenerUsuarios() {
     this.usuarioService.obtenerUsuarios().subscribe({
       next: (resp) => {
@@ -127,27 +113,40 @@ export class ConfiguracionComponent implements OnInit {
   }
 
   actualizarPaginacionUsuarios() {
-    this.totalPagUsuarios = Math.ceil(this.usuarios.length / this.tamPaginaUsuarios);
-    this.paginaUsuarios = Math.min(this.paginaUsuarios, this.totalPagUsuarios || 1);
+    this.totalPagUsuarios = Math.ceil(
+      this.usuarios.length / this.tamPaginaUsuarios
+    );
+    this.paginaUsuarios = Math.min(
+      this.paginaUsuarios,
+      this.totalPagUsuarios || 1
+    );
     const inicio = (this.paginaUsuarios - 1) * this.tamPaginaUsuarios;
-    this.usuariosPaginados = this.usuarios.slice(inicio, inicio + this.tamPaginaUsuarios);
+    this.usuariosPaginados = this.usuarios.slice(
+      inicio,
+      inicio + this.tamPaginaUsuarios
+    );
   }
 
   enviarUsuario() {
-    // Validadores dinámicos
     if (this.editandoUsuario) {
       this.formUsuario.get('password')?.clearValidators();
       this.formUsuario.get('password_confirmation')?.clearValidators();
     } else {
-      this.formUsuario.get('password')?.setValidators([Validators.required, Validators.minLength(8)]);
-      this.formUsuario.get('password_confirmation')?.setValidators([Validators.required]);
+      this.formUsuario
+        .get('password')
+        ?.setValidators([Validators.required, Validators.minLength(8)]);
+      this.formUsuario
+        .get('password_confirmation')
+        ?.setValidators([Validators.required]);
     }
 
     this.formUsuario.get('password')?.updateValueAndValidity();
     this.formUsuario.get('password_confirmation')?.updateValueAndValidity();
 
     if (this.formUsuario.invalid) {
-      this.notificacion.warning('Debes completar todos los campos obligatorios');
+      this.notificacion.warning(
+        'Debes completar todos los campos obligatorios'
+      );
       return;
     }
 
@@ -158,22 +157,24 @@ export class ConfiguracionComponent implements OnInit {
       delete dto.password_confirmation;
     }
 
-    // EDITAR
     if (this.editandoUsuario && this.idEditandoUsuario !== null) {
-      this.usuarioService.actualizarUsuario(this.idEditandoUsuario, dto).subscribe({
-        next: () => {
-          this.notificacion.success('Usuario actualizado correctamente');
-          this.obtenerUsuarios();
-          this.cancelarEdicionUsuario();
-        },
-        error: (err) => {
-          this.notificacion.error(err.error?.message || 'Error al actualizar usuario');
-        }
-      });
+      this.usuarioService
+        .actualizarUsuario(this.idEditandoUsuario, dto)
+        .subscribe({
+          next: () => {
+            this.notificacion.success('Usuario actualizado correctamente');
+            this.obtenerUsuarios();
+            this.cancelarEdicionUsuario();
+          },
+          error: (err) => {
+            this.notificacion.error(
+              err.error?.message || 'Error al actualizar usuario'
+            );
+          },
+        });
       return;
     }
 
-    // CREAR
     this.usuarioService.crearUsuario(dto).subscribe({
       next: () => {
         this.notificacion.success('Usuario creado correctamente');
@@ -182,7 +183,7 @@ export class ConfiguracionComponent implements OnInit {
       },
       error: (err) => {
         this.notificacion.error(err.error?.message || 'Error al crear usuario');
-      }
+      },
     });
   }
 
@@ -213,13 +214,10 @@ export class ConfiguracionComponent implements OnInit {
         this.notificacion.success('Usuario eliminado correctamente');
         this.obtenerUsuarios();
       },
-      error: () => this.notificacion.error('Error al eliminar usuario')
+      error: () => this.notificacion.error('Error al eliminar usuario'),
     });
   }
 
-  // ==========================================
-  // DEPARTAMENTOS
-  // ==========================================
   obtenerDepartamentos() {
     this.departamentoService.obtenerDepartamentos().subscribe({
       next: (resp) => {
@@ -231,10 +229,18 @@ export class ConfiguracionComponent implements OnInit {
   }
 
   actualizarPaginacionDepartamentos() {
-    this.totalPagDepartamentos = Math.ceil(this.departamentos.length / this.tamPaginaDepartamentos);
-    this.paginaDepartamentos = Math.min(this.paginaDepartamentos, this.totalPagDepartamentos || 1);
+    this.totalPagDepartamentos = Math.ceil(
+      this.departamentos.length / this.tamPaginaDepartamentos
+    );
+    this.paginaDepartamentos = Math.min(
+      this.paginaDepartamentos,
+      this.totalPagDepartamentos || 1
+    );
     const inicio = (this.paginaDepartamentos - 1) * this.tamPaginaDepartamentos;
-    this.departamentosPaginados = this.departamentos.slice(inicio, inicio + this.tamPaginaDepartamentos);
+    this.departamentosPaginados = this.departamentos.slice(
+      inicio,
+      inicio + this.tamPaginaDepartamentos
+    );
   }
 
   enviarDepartamento() {
@@ -247,18 +253,19 @@ export class ConfiguracionComponent implements OnInit {
 
     // EDITAR
     if (this.editandoDepartamento && this.idEditandoDepartamento !== null) {
-      this.departamentoService.actualizarDepartamentoPorId(this.idEditandoDepartamento, dto).subscribe({
-        next: () => {
-          this.notificacion.success('Departamento actualizado');
-          this.obtenerDepartamentos();
-          this.cancelarEdicionDepartamento();
-        },
-        error: () => this.notificacion.error('Error al actualizar departamento')
-      });
+      this.departamentoService
+        .actualizarDepartamentoPorId(this.idEditandoDepartamento, dto)
+        .subscribe({
+          next: () => {
+            this.notificacion.success('Departamento actualizado');
+            this.obtenerDepartamentos();
+            this.cancelarEdicionDepartamento();
+          },
+          error: () =>
+            this.notificacion.error('Error al actualizar departamento'),
+        });
       return;
     }
-
-    // CREAR
     this.departamentoService.crearDepartamento(dto).subscribe({
       next: () => {
         this.notificacion.success('Departamento creado');
@@ -293,9 +300,6 @@ export class ConfiguracionComponent implements OnInit {
     });
   }
 
-  // ==========================================
-  // CIUDADES
-  // ==========================================
   obtenerCiudades() {
     this.ciudadService.obtenerCiudades().subscribe({
       next: (resp) => {
@@ -307,10 +311,18 @@ export class ConfiguracionComponent implements OnInit {
   }
 
   actualizarPaginacionCiudades() {
-    this.totalPagCiudades = Math.ceil(this.ciudades.length / this.tamPaginaCiudades);
-    this.paginaCiudades = Math.min(this.paginaCiudades, this.totalPagCiudades || 1);
+    this.totalPagCiudades = Math.ceil(
+      this.ciudades.length / this.tamPaginaCiudades
+    );
+    this.paginaCiudades = Math.min(
+      this.paginaCiudades,
+      this.totalPagCiudades || 1
+    );
     const inicio = (this.paginaCiudades - 1) * this.tamPaginaCiudades;
-    this.ciudadesPaginadas = this.ciudades.slice(inicio, inicio + this.tamPaginaCiudades);
+    this.ciudadesPaginadas = this.ciudades.slice(
+      inicio,
+      inicio + this.tamPaginaCiudades
+    );
   }
 
   enviarCiudad() {
@@ -323,14 +335,16 @@ export class ConfiguracionComponent implements OnInit {
 
     // EDITAR
     if (this.editandoCiudad && this.idEditandoCiudad !== null) {
-      this.ciudadService.actualizarCiudadPorId(this.idEditandoCiudad, dto).subscribe({
-        next: () => {
-          this.notificacion.success('Ciudad actualizada');
-          this.obtenerCiudades();
-          this.cancelarEdicionCiudad();
-        },
-        error: () => this.notificacion.error('Error al actualizar ciudad'),
-      });
+      this.ciudadService
+        .actualizarCiudadPorId(this.idEditandoCiudad, dto)
+        .subscribe({
+          next: () => {
+            this.notificacion.success('Ciudad actualizada');
+            this.obtenerCiudades();
+            this.cancelarEdicionCiudad();
+          },
+          error: () => this.notificacion.error('Error al actualizar ciudad'),
+        });
       return;
     }
 

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AutenticationService } from './../../services/autenticacion/autentication.service';
-import { UserById, UserLogin, UserLoginRepsonse } from '../../models/User';
+import { UserLogin, UserLoginRepsonse } from '../../models/User';
 import { CommonModule } from '@angular/common';
 import { NotificacionService } from '../../services/notificacion/notificacion.service';
 import { Router } from '@angular/router';

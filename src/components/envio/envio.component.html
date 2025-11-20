@@ -1,7 +1,6 @@
 <div class="container mt-4">
   <h2 class="text-center mb-4">Envíos</h2>
 
-  <!-- Formulario -->
   <div class="card shadow-sm p-3 mb-4">
     <h5 class="mb-3">{{ editando ? 'Editar Envío' : 'Nuevo Envío' }}</h5>
 
@@ -32,7 +31,8 @@
 
       <div class="col-12">
         <label>Observaciones</label>
-        <textarea class="form-control" rows="3" formControlName="observaciones" placeholder="Escribe observaciones..."></textarea>
+        <textarea class="form-control" rows="3" formControlName="observaciones"
+          placeholder="Escribe observaciones..."></textarea>
       </div>
 
       <div class="col-12 text-end">
@@ -43,7 +43,6 @@
     </form>
   </div>
 
-  <!-- Tabla de envíos -->
   <div class="card shadow-sm">
     <div class="card-body p-0">
       <div class="table-responsive">
@@ -62,7 +61,7 @@
           <tbody>
             <tr *ngFor="let e of enviosPaginados">
               <td>{{ e.codigo_envio }}</td>
-              <td>{{ e.fecha_envio |  date: 'yyyy-MM-dd' }}</td>
+              <td>{{ e.fecha_envio | date: 'yyyy-MM-dd' }}</td>
               <td>{{ e.finca?.nombre }}</td>
               <td>{{ e.lote?.nombre || 'Sin lote' }}</td>
               <td>{{ e.peso_kg }} kg</td>
@@ -76,9 +75,12 @@
                 </span>
               </td>
               <td>
-                <button class="btn btn-warning btn-sm me-2" [disabled]="e.estado !== 'pendiente'" (click)="editar(e)">Editar</button>
-                <button class="btn btn-danger btn-sm me-2" [disabled]="e.estado !== 'pendiente'" (click)="eliminar(e.id)">Eliminar</button>
-                <button class="btn btn-secondary btn-sm" [disabled]="e.estado !== 'pendiente'" (click)="cambiarEstado(e.id)">Enviar</button>
+                <button class="btn btn-warning btn-sm me-2" [disabled]="e.estado !== 'pendiente'"
+                  (click)="editar(e)">Editar</button>
+                <button class="btn btn-danger btn-sm me-2" [disabled]="e.estado !== 'pendiente'"
+                  (click)="eliminar(e.id)">Eliminar</button>
+                <button class="btn btn-secondary btn-sm" [disabled]="e.estado !== 'pendiente'"
+                  (click)="cambiarEstado(e.id)">Enviar</button>
               </td>
             </tr>
 
@@ -94,14 +96,14 @@
         </table>
       </div>
 
-      <!-- Paginación -->
       <div class="d-flex justify-content-center py-3">
         <nav>
           <ul class="pagination">
             <li class="page-item" [class.disabled]="paginaActual === 1">
               <button class="page-link" (click)="cambiarPagina(paginaActual - 1)">Anterior</button>
             </li>
-            <li class="page-item" *ngFor="let p of [].constructor(totalPaginas); let i = index" [class.active]="paginaActual === i+1">
+            <li class="page-item" *ngFor="let p of [].constructor(totalPaginas); let i = index"
+              [class.active]="paginaActual === i+1">
               <button class="page-link" (click)="cambiarPagina(i+1)">{{ i+1 }}</button>
             </li>
             <li class="page-item" [class.disabled]="paginaActual === totalPaginas">

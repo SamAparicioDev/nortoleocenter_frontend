@@ -5,14 +5,13 @@ import { registerLocaleData } from '@angular/common';
 import localeEs from '@angular/common/locales/es';
 import { LOCALE_ID } from '@angular/core';
 
-// Registrar locale español
 registerLocaleData(localeEs, 'es');
 
 bootstrapApplication(AppComponent, {
-  ...appConfig, // <-- trae todos tus providers de appConfig
+  ...appConfig,
   providers: [
-    ...(appConfig.providers || []), // todos tus providers existentes
-    { provide: LOCALE_ID, useValue: 'es' } // <-- agrega LOCALE_ID para español
+    ...(appConfig.providers || []), 
+    { provide: LOCALE_ID, useValue: 'es' }
   ]
 })
 .catch(err => console.error(err));

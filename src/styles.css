@@ -87,11 +87,11 @@ h2 {
   background-color: #5936a2;
   border: none;
   color: white;
-  border-radius: 8px;/* morado más oscuro al hover */
+  border-radius: 8px;
 }
 
 .btn-morado {
-  background-color: #6f42c1; /* morado Bootstrap similar */
+  background-color: #6f42c1; 
   color: white;
   border: none;
   border-radius: 8px;
