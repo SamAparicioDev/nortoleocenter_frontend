@@ -98,6 +98,7 @@ export class LoteComponent implements OnInit {
     }
 
     const dto: LoteDTO = this.formLote.value;
+    this.cargando = true;
 
     if (this.editando && this.idEditando !== null) {
 
@@ -106,8 +107,12 @@ export class LoteComponent implements OnInit {
           this.notificacion.success('Lote actualizado correctamente');
           this.obtenerLotes();
           this.cancelarEdicion();
+          this.cargando = false;
         },
-        error: () => this.notificacion.error('Error actualizando lote'),
+        error: () => {
+          this.notificacion.error('Error actualizando lote');
+          this.cargando = false;
+        },
       });
 
     } else {
@@ -117,8 +122,12 @@ export class LoteComponent implements OnInit {
           this.notificacion.success('Lote creado correctamente');
           this.obtenerLotes();
           this.formLote.reset();
+          this.cargando = false;
         },
-        error: () => this.notificacion.error('Error creando lote'),
+        error: () => {
+          this.notificacion.error('Error creando lote');
+          this.cargando = false;
+        },
       });
 
     }
@@ -144,12 +153,18 @@ export class LoteComponent implements OnInit {
   eliminar(id: number) {
     if (!confirm("¿Seguro que deseas eliminar este lote?")) return;
 
+    this.cargando = true;
+
     this.loteService.eliminarLotePorId(id).subscribe({
       next: () => {
         this.notificacion.warning('Lote eliminado');
         this.obtenerLotes();
+        this.cargando = false;
       },
-      error: () => this.notificacion.error('Error eliminando el lote'),
+      error: () => {
+        this.notificacion.error('Error eliminando el lote');
+        this.cargando = false;
+      },
     });
   }
 }

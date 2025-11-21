@@ -1,3 +1,4 @@
+import { DashboardComponent } from './../components/dashboard/dashboard.component';
 import { Routes } from '@angular/router';
 import { AutenticacionComponent } from '../components/autenticacion/autenticacion.component';
 import { ContenidoComponent } from '../components/contenido/contenido.component';
@@ -26,7 +27,8 @@ export const routes: Routes = [
     component: ContenidoComponent,
     canActivate: [authGuard],
     children: [
-      { path: '', redirectTo: 'usuario', pathMatch: 'full' },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component : DashboardComponent},
       { path: 'usuario', component: UsuarioComponent },
       { path: 'envio', component: EnvioComponent },
       { path: 'recepcion', component: RecepcionComponent },

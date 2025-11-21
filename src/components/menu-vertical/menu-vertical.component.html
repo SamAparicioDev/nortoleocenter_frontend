@@ -3,7 +3,7 @@
     <aside id="aside-class" class="text-white" [class.collapsed]="isCollapsed" [class.fullscreen]="isMobileMenuOpen"
       style="position: fixed; top: 0; left: 0; height: 100vh; transition: width 0.3s ease; overflow-x: hidden;">
       <div class="d-flex flex-column h-100">
-        <i class="fa-solid fa-bars me-2"></i>
+        <br>
         <h5 class="mb-0 text-center" *ngIf="!isCollapsed">NORTOLEOCENTER</h5>
 
         <hr *ngIf="!isCollapsed">
@@ -18,48 +18,52 @@
           </div>
         </div>
 
+
+
         <ul class="nav flex-column mb-auto px-2">
-          @if (isProductor() || isAdmin()) {
-           <li class="nav-item">
+          <li class="nav-item">
+            <a class="nav text-white" routerLink="dashboard" (click)="cerrarMenu()" routerLinkActive="active">
+              <i class="fas fa-tachometer-alt me-2"></i> <!-- Icono de Dashboard -->
+              <span *ngIf="!isCollapsed">Dashboard</span>
+            </a>
+          </li>
+
+          <li class="nav-item" *ngIf="isProductor() || isAdmin()">
             <a class="nav text-white" routerLink="finca" (click)="cerrarMenu()" routerLinkActive="active">
-              <i class="fas fa-headphones me-2"></i>
+              <i class="fas fa-seedling me-2"></i> <!-- Icono de Finca/Planta -->
               <span *ngIf="!isCollapsed">Fincas</span>
             </a>
           </li>
-        }
-         @if (isProductor() || isAdmin()) {
-          <li class="nav-item">
+
+          <li class="nav-item" *ngIf="isProductor() || isAdmin()">
             <a class="nav text-white" routerLink="lote" (click)="cerrarMenu()" routerLinkActive="active">
-              <i class="fas fa-users me-2"></i>
+              <i class="fas fa-th-large me-2"></i> <!-- Icono de Lote / Parcelas -->
               <span *ngIf="!isCollapsed">Lotes</span>
             </a>
           </li>
-        }
-        @if (isProductor() || isAdmin()){
-          <li class="nav-item">
+
+          <li class="nav-item" *ngIf="isProductor() || isAdmin()">
             <a class="nav text-white" routerLink="envio" (click)="cerrarMenu()" routerLinkActive="active">
-              <i class="fas fa-headphones me-2"></i>
+              <i class="fas fa-shipping-fast me-2"></i> <!-- Icono de Envíos -->
               <span *ngIf="!isCollapsed">Envios</span>
             </a>
           </li>
-        }
-        @if (isEmpleado() || isAdmin()) {
-          <li class="nav-item">
+
+          <li class="nav-item" *ngIf="isEmpleado() || isAdmin()">
             <a class="nav text-white" routerLink="recepcion" (click)="cerrarMenu()" routerLinkActive="active">
-              <i class="fas fa-users me-2"></i>
+              <i class="fas fa-warehouse me-2"></i> <!-- Icono de Recepciones / Almacén -->
               <span *ngIf="!isCollapsed">Recepciones</span>
             </a>
           </li>
-        }
-        @if(isAdmin()){
-          <li class="nav-item">
+
+          <li class="nav-item" *ngIf="isAdmin()">
             <a class="nav text-white" routerLink="configuracion" routerLinkActive="active">
-              <i class="fas fa-users me-2"></i>
-              <span *ngIf="!isCollapsed">Configuracion</span>
+              <i class="fas fa-cogs me-2"></i> <!-- Icono de Configuración -->
+              <span *ngIf="!isCollapsed">Configuración</span>
             </a>
           </li>
-        }
         </ul>
+
 
         <hr *ngIf="!isCollapsed">
 

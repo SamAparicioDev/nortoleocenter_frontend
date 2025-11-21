@@ -10,38 +10,39 @@
           <form [formGroup]="formUsuario" (ngSubmit)="guardarCambios()">
 
             <div class="row">
-
               <div class="col-12 mb-3">
                 <label class="form-label">Nombre</label>
-                <input type="text" class="form-control" formControlName="name" [readonly]="!editando">
+                <input type="text" class="form-control" formControlName="name" [readonly]="!editando || cargando">
               </div>
 
               <div class="col-12 mb-3">
                 <label class="form-label">Correo Electrónico</label>
-                <input type="email" class="form-control" formControlName="email" [readonly]="!editando">
+                <input type="email" class="form-control" formControlName="email" [readonly]="!editando || cargando">
               </div>
 
               <div class="col-12 mb-3">
                 <label class="form-label">Contraseña</label>
-                <input type="password" class="form-control" formControlName="password" [readonly]="!editando" placeholder="Nueva contraseña">
+                <input type="password" class="form-control" formControlName="password" [readonly]="!editando || cargando" placeholder="Nueva contraseña">
               </div>
 
               <div class="col-12 mb-3">
                 <label class="form-label">Confirmar Contraseña</label>
-                <input type="password" class="form-control" formControlName="password_confirmation" [readonly]="!editando" placeholder="Repite la contraseña">
+                <input type="password" class="form-control" formControlName="password_confirmation" [readonly]="!editando || cargando" placeholder="Repite la contraseña">
                 <div *ngIf="formUsuario.errors?.['noCoinciden'] && formUsuario.get('password_confirmation')?.touched"
                      class="text-danger small">
                   Las contraseñas no coinciden
                 </div>
               </div>
-
             </div>
 
             <div class="d-flex justify-content-end mt-2">
-              <button *ngIf="!editando" type="button" class="btn btn-morado" (click)="habilitarEdicion()">Editar</button>
+              <button *ngIf="!editando" type="button" class="btn btn-morado" (click)="habilitarEdicion()" [disabled]="cargando">Editar</button>
               <div *ngIf="editando">
-                <button type="submit" class="btn btn-success me-2">Guardar</button>
-                <button type="button" class="btn btn-secondary" (click)="cancelarEdicion()">Cancelar</button>
+                <button type="submit" class="btn btn-success me-2" [disabled]="cargando">
+                  <span *ngIf="cargando" class="spinner-border spinner-border-sm me-1"></span>
+                  Guardar
+                </button>
+                <button type="button" class="btn btn-secondary" (click)="cancelarEdicion()" [disabled]="cargando">Cancelar</button>
               </div>
             </div>
 

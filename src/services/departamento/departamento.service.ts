@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/dev';
+import { environment } from '../../environments/prod';
 import { Departamento, DepartamentoDTO, DepartamentoListResponse, DepartamentoResponse } from '../../models/Departamento';
 import { Observable } from 'rxjs';
 

@@ -47,7 +47,7 @@ export class RecepcionComponent implements OnInit {
   }
 
   obtenerEnvios() {
-    this.envioService.obtenerMisEnvios().subscribe({
+    this.envioService.obtenerEnvios().subscribe({
       next: (response) => {
         this.envios = response.filter((e) => e.estado === 'enviado');
       },

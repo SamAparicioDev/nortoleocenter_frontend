@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/dev';
+import { environment } from '../../environments/prod';
 import { Lote, LoteDTO, LoteResponse } from '../../models/Lote';
 import { Observable } from 'rxjs';
 

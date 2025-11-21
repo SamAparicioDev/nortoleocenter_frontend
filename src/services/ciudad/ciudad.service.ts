@@ -1,7 +1,7 @@
 import { CiudadDTO, CiudadResponseList } from './../../models/Ciudad';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/dev';
+import { environment } from '../../environments/prod';
 import { CiudadResponse } from '../../models/Ciudad';
 import { Observable } from 'rxjs';
 

@@ -10,7 +10,7 @@ import { FincaService } from '../../services/finca/finca.service';
 import { FincaDTO, FincaResponse } from '../../models/Finca';
 import { CiudadResponseList } from '../../models/Ciudad';
 import { CiudadService } from '../../services/ciudad/ciudad.service';
-import { NotificacionService } from '../../services/notificacion/notificacion.service'; // <-- IMPORTANTE
+import { NotificacionService } from '../../services/notificacion/notificacion.service';
 
 @Component({
   selector: 'app-finca',
@@ -22,13 +22,11 @@ import { NotificacionService } from '../../services/notificacion/notificacion.se
 export class FincaComponent implements OnInit {
   fincas: FincaResponse[] = [];
   fincasPaginadas: FincaResponse[] = [];
-  cargando = false;
   ciudades: CiudadResponseList[] = [];
-
+  cargando = false;
   paginaActual = 1;
   itemsPorPagina = 5;
   totalPaginas = 0;
-
   formFinca!: FormGroup;
   editando = false;
   idEditando: number | null = null;
@@ -56,9 +54,8 @@ export class FincaComponent implements OnInit {
 
   obtenerCiudades() {
     this.cargando = true;
-
     this.ciudadService.obtenerCiudades().subscribe({
-      next: (resp: CiudadResponseList[]) => {
+      next: (resp) => {
         this.ciudades = resp;
         this.cargando = false;
       },
@@ -71,7 +68,6 @@ export class FincaComponent implements OnInit {
 
   obtenerFincas() {
     this.cargando = true;
-
     this.fincaService.obtenerMisFincas().subscribe({
       next: (resp: FincaResponse[]) => {
         this.fincas = resp;
@@ -80,8 +76,8 @@ export class FincaComponent implements OnInit {
         this.cargando = false;
       },
       error: () => {
+        this.notificacion.error('Error al cargar fincas');
         this.cargando = false;
-        this.notificacion.error('Error al cargar tus fincas');
       },
     });
   }
@@ -105,6 +101,7 @@ export class FincaComponent implements OnInit {
     }
 
     const dto: FincaDTO = this.formFinca.value;
+    this.cargando = true;
 
     if (this.editando && this.idEditando !== null) {
       this.fincaService.actualizarFincaPorId(this.idEditando, dto).subscribe({
@@ -112,9 +109,11 @@ export class FincaComponent implements OnInit {
           this.obtenerFincas();
           this.cancelarEdicion();
           this.notificacion.success('Finca actualizada correctamente');
+          this.cargando = false;
         },
         error: () => {
           this.notificacion.error('Error al actualizar la finca');
+          this.cargando = false;
         },
       });
     } else {
@@ -123,9 +122,11 @@ export class FincaComponent implements OnInit {
           this.obtenerFincas();
           this.formFinca.reset();
           this.notificacion.success('Finca registrada correctamente');
+          this.cargando = false;
         },
         error: () => {
           this.notificacion.error('Error al registrar la finca');
+          this.cargando = false;
         },
       });
     }
@@ -152,13 +153,16 @@ export class FincaComponent implements OnInit {
   eliminar(id: number) {
     if (!confirm('¿Seguro que deseas eliminar esta finca?')) return;
 
+    this.cargando = true;
     this.fincaService.eliminarFincaPorId(id).subscribe({
       next: () => {
         this.obtenerFincas();
         this.notificacion.success('Finca eliminada correctamente');
+        this.cargando = false;
       },
       error: () => {
         this.notificacion.error('Error al eliminar la finca');
+        this.cargando = false;
       },
     });
   }

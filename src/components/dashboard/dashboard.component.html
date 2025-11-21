@@ -1,0 +1,35 @@
+<div class="container mt-4" *ngIf="!cargando">
+  <h2 class="text-center mb-4">Estadisticas</h2>
+
+  <div class="charts-grid">
+
+    <!-- Envíos -->
+    <div class="chart-card">
+      <h4 class="text-center">Envíos por fecha</h4>
+      <div class="chart-wrapper">
+        <canvas #enviosCanvas></canvas>
+      </div>
+    </div>
+
+    <!-- Recepciones -->
+    <div class="chart-card">
+      <h4 class="text-center">Recepciones por fecha</h4>
+      <div class="chart-wrapper">
+        <canvas #recepcionesCanvas></canvas>
+      </div>
+    </div>
+
+    <!-- Estados -->
+    <div class="chart-card">
+      <h4 class="text-center">Estados de Envíos</h4>
+      <div class="chart-wrapper">
+        <canvas #estadosCanvas></canvas>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div *ngIf="cargando" class="text-center mt-5">
+  <p>Cargando dashboard...</p>
+</div>

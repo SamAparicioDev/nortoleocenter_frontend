@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/dev';
+import { environment } from '../../environments/prod';
 import { FincaDTO, FincaResponse } from '../../models/Finca';
 import { Observable } from 'rxjs';
 

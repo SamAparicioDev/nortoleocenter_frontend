@@ -23,6 +23,7 @@ export class UsuarioComponent implements OnInit {
   usuario!: UserById;
   formUsuario!: FormGroup;
   editando = false;
+  cargando = false;
 
   constructor(
     private usuarioService: UsuarioService,
@@ -37,13 +38,16 @@ export class UsuarioComponent implements OnInit {
     const parsedUser = JSON.parse(storedUser) as UserById;
     const userId = parsedUser.id;
 
+    this.cargando = true;
     this.usuarioService.obtenerUsuarioPorId(userId).subscribe({
       next: (data) => {
         this.usuario = data;
         this.crearFormulario();
+        this.cargando = false;
       },
       error: (err) => {
         console.error('Error cargando usuario:', err);
+        this.cargando = false;
       },
     });
   }
@@ -83,31 +87,33 @@ export class UsuarioComponent implements OnInit {
     });
   }
 
- guardarCambios() {
-  if (this.formUsuario.invalid) {
-    this.notificacion.warning('Completa correctamente el formulario');
-    return;
-  }
-
-  const { name, email, password, password_confirmation } = this.formUsuario.value;
-  const dto: Partial<UserDTO> = { name, email };
-
-  if (password) {
-    dto['password'] = password;
-    dto['password_confirmation'] = password_confirmation; // 🔥 agregar confirmación
-  }
-
-  this.usuarioService.actualizarUsuario(this.usuario.id, dto).subscribe({
-    next: (resp) => {
-      this.notificacion.success('Perfil actualizado correctamente');
-      this.editando = false;
-      Object.assign(this.usuario, { name, email }); // actualizar local
-      this.formUsuario.patchValue({ password: '', password_confirmation: '' });
-    },
-    error: (err) => {
-      console.error(err);
-      this.notificacion.error('Error al actualizar el perfil');
+  guardarCambios() {
+    if (this.formUsuario.invalid) {
+      this.notificacion.warning('Completa correctamente el formulario');
+      return;
     }
-  });
- }
+
+    const { name, email, password, password_confirmation } = this.formUsuario.value;
+    const dto: Partial<UserDTO> = { name, email };
+    if (password) {
+      dto['password'] = password;
+      dto['password_confirmation'] = password_confirmation;
+    }
+
+    this.cargando = true;
+    this.usuarioService.actualizarUsuario(this.usuario.id, dto).subscribe({
+      next: (resp) => {
+        this.notificacion.success('Perfil actualizado correctamente');
+        this.editando = false;
+        Object.assign(this.usuario, { name, email });
+        this.formUsuario.patchValue({ password: '', password_confirmation: '' });
+        this.cargando = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.notificacion.error('Error al actualizar el perfil');
+        this.cargando = false;
+      },
+    });
+  }
 }

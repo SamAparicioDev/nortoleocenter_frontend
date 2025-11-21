@@ -1,10 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  Validators,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EnvioService } from '../../services/envio/envio.service';
 import { EnvioDTO } from '../../models/Envio';
@@ -79,37 +74,19 @@ export class EnvioComponent implements OnInit {
 
   obtenerEnvios() {
     this.cargando = true;
-
     this.envioService.obtenerEnvios().subscribe({
       next: (resp: EnvioData[]) => {
-        // Orden de estados personalizado
-        const ordenEstados: any = {
-          pendiente: 1,
-          enviado: 2,
-          recibido: 3,
-        };
-
+        const ordenEstados: any = { pendiente: 1, enviado: 2, recibido: 3 };
         this.envios = resp.sort((a, b) => {
-          // Primero ordenar según el estado
-          const ordenEstadoA = ordenEstados[a.estado] ?? 99;
-          const ordenEstadoB = ordenEstados[b.estado] ?? 99;
-
-          if (ordenEstadoA !== ordenEstadoB) {
-            return ordenEstadoA - ordenEstadoB;
-          }
-
-          // Si tienen el mismo estado, ordenar por fecha descendente
-          return (
-            new Date(b.fecha_envio).getTime() -
-            new Date(a.fecha_envio).getTime()
-          );
+          const estadoA = ordenEstados[a.estado] ?? 99;
+          const estadoB = ordenEstados[b.estado] ?? 99;
+          if (estadoA !== estadoB) return estadoA - estadoB;
+          return new Date(b.fecha_envio).getTime() - new Date(a.fecha_envio).getTime();
         });
-
         this.totalPaginas = Math.ceil(this.envios.length / this.itemsPorPagina);
         this.actualizarPaginacion();
         this.cargando = false;
       },
-
       error: () => {
         this.cargando = false;
         this.notificacion.error('Error cargando envíos');
@@ -119,8 +96,7 @@ export class EnvioComponent implements OnInit {
 
   actualizarPaginacion() {
     const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
-    const fin = inicio + this.itemsPorPagina;
-    this.enviosPaginados = this.envios.slice(inicio, fin);
+    this.enviosPaginados = this.envios.slice(inicio, inicio + this.itemsPorPagina);
   }
 
   cambiarPagina(pagina: number) {
@@ -134,9 +110,7 @@ export class EnvioComponent implements OnInit {
       this.notificacion.warning('Completa todos los campos obligatorios');
       return;
     }
-
     const dto: EnvioDTO = this.formEnvio.value;
-
     if (this.editando && this.idEditando !== null) {
       this.envioService.actualizarEnvioPorId(this.idEditando, dto).subscribe({
         next: () => {
@@ -144,6 +118,7 @@ export class EnvioComponent implements OnInit {
           this.editando = false;
           this.idEditando = null;
           this.formEnvio.reset();
+          this.lotes = [];
           this.notificacion.success('Envío actualizado correctamente');
         },
         error: () => this.notificacion.error('Error al actualizar el envío'),
@@ -164,14 +139,12 @@ export class EnvioComponent implements OnInit {
   editar(envio: EnvioData) {
     this.editando = true;
     this.idEditando = envio.id;
-
     this.formEnvio.patchValue({
       finca_id: envio.finca_id,
       lote_id: envio.lote_id,
       peso_kg: envio.peso_kg,
       observaciones: envio.observaciones,
     });
-
     this.obtenerLotesPorFinca(envio.finca_id);
   }
 
@@ -186,12 +159,12 @@ export class EnvioComponent implements OnInit {
     this.editando = false;
     this.idEditando = null;
     this.formEnvio.reset();
+    this.lotes = [];
     this.notificacion.warning('Edición cancelada');
   }
 
   eliminar(id: number) {
     if (!confirm('¿Seguro que deseas eliminar este envío?')) return;
-
     this.envioService.eliminarEnvioPorId(id).subscribe({
       next: () => {
         this.obtenerEnvios();
@@ -202,10 +175,8 @@ export class EnvioComponent implements OnInit {
   }
 
   cambiarEstado(id: number) {
-    // Cambia el estado solo si es pendiente
     const envio = this.envios.find((e) => e.id === id);
     if (!envio || envio.estado !== 'pendiente') return;
-
     this.envioService.cambiarEstadoEnvio(id, 'enviado').subscribe({
       next: () => {
         this.notificacion.success('Envío marcado como enviado');
